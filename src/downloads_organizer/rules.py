@@ -25,6 +25,10 @@ class FileCategorizer:
         ".js": "Code",
         ".html": "Code",
         ".css": "Code",
+        ".pkg": "Applications",
+        ".exe": "Applications",
+        ".apk": "Applications",
+        ".dmg": "Applications",
     }
 
     def __init__(self, rules: dict[str, str] | None = None) -> None:
