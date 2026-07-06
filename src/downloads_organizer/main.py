@@ -1,4 +1,4 @@
-from cli import run
+from .cli import run
 
 
 def main() -> int:
