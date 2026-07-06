@@ -1,7 +1,8 @@
 from pathlib import Path
-from .rules import FileCategorizer
+
 from .constants import IGNORED_FILENAMES
 from .models import ScanResult
+from .rules import FileCategorizer
 
 
 class DownloadsOrganizer:

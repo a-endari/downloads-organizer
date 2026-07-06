@@ -1,18 +1,9 @@
-from pathlib import Path
-
-from .organizer import DownloadsOrganizer
+from cli import run
 
 
-def main() -> None:
-    downloads = Path.home() / "Downloads"
-
-    organizer = DownloadsOrganizer(downloads)
-
-    results = organizer.scan()
-
-    for result in results:
-        print(f"{result.source.name:<30} -> {result.category}")
+def main() -> int:
+    return run()
 
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())
