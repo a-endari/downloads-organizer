@@ -21,6 +21,16 @@ def handle_stats(directory: Path) -> None:
     print(f"Files     : {len(results)}")
 
 
+def handle_organzie(directory: Path) -> None:
+    organizer = DownloadsOrganizer(directory)
+
+    results = organizer.scan()
+    for result in results:
+        print(f"{result.source.name}")
+
+        print(f"  -> {result.category}")
+
+
 def run() -> int:
     parser = argparse.ArgumentParser(
         prog="downloads-organizer", description="Organize files in your Downloads folder."
@@ -42,7 +52,10 @@ def run() -> int:
     )
 
     stat_parser = subparser.add_parser(
-        "stats", help="Show statistics about a directory.")
+        "stats",
+        help="Show statistics about a directory.",
+    )
+
     stat_parser.add_argument(
         "directory",
         nargs="?",
@@ -50,6 +63,20 @@ def run() -> int:
         default=Path.home() / "Downloads",
         help="Directory to analyze (defaults to your Downloads folder.)",
     )
+
+    organize_parser = subparser.add_parser(
+        "organize",
+        help="Organize files into category folders.",
+    )
+
+    organize_parser.add_argument(
+        "directory",
+        nargs="?",
+        type=Path,
+        default=Path.home() / "Downloads",
+        help="Directory to organize (defaults to your Downloads folder.)",
+    )
+
     args = parser.parse_args()
 
     if args.command == "scan":
@@ -58,4 +85,6 @@ def run() -> int:
     elif args.command == "stats":
         handle_stats(args.directory)
 
+    elif args.command == "organize":
+        handle_organzie(args.directory)
     return 0
