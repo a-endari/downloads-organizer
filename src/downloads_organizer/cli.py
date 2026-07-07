@@ -3,28 +3,48 @@ from pathlib import Path
 from .organizer import DownloadsOrganizer
 
 
-def handle_scan(directory: Path) -> None:
-    organizer = DownloadsOrganizer(directory)
+def get_organizer(directory: Path) -> DownloadsOrganizer:
+    if not directory.exists():
+        raise FileNotFoundError(f"Directory '{directory}' does not exist.")
 
-    results = organizer.scan()
+    if not directory.is_dir():
+        raise NotADirectoryError(f"'{directory}' is not a directory.")
+
+    return DownloadsOrganizer(directory)
+
+
+def handle_scan(directory: Path) -> None:
+    try:
+        organizer = get_organizer(directory)
+        results = organizer.scan()
+    except (FileNotFoundError, NotADirectoryError) as error:
+        print(error)
+        return
 
     for result in results:
         print(f"{result.source.name:<30} -> {result.category}")
 
 
 def handle_stats(directory: Path) -> None:
-    organizer = DownloadsOrganizer(directory)
+    try:
+        organizer = get_organizer(directory)
+        results = organizer.scan()
+    except (FileNotFoundError, NotADirectoryError) as error:
+        print(error)
+        return
 
-    results = organizer.scan()
-
-    print(f"Directory : {directory}")
+    print(f"Directory : {directory.resolve()}")
     print(f"Files     : {len(results)}")
 
 
-def handle_organzie(directory: Path) -> None:
-    organizer = DownloadsOrganizer(directory)
+def handle_organize(directory: Path) -> None:
+    try:
+        organizer = get_organizer(directory)
+        results = organizer.scan()
+    except (FileNotFoundError, NotADirectoryError) as error:
+        print(error)
+        return
 
-    results = organizer.scan()
     for result in results:
         print(f"{result.source.name}")
 
@@ -86,5 +106,5 @@ def run() -> int:
         handle_stats(args.directory)
 
     elif args.command == "organize":
-        handle_organzie(args.directory)
+        handle_organize(args.directory)
     return 0
