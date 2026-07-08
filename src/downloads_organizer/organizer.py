@@ -71,7 +71,7 @@ class DownloadsOrganizer:
 
             self._ensure_directory(destination)
 
-            destination_path = (self._get_destination_path(result),)
+            destination_path = self._get_destination_path(result)
 
             shutil.move(
                 result.source,

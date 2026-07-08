@@ -8,3 +8,10 @@ class ScanResult:
 
     source: Path
     category: str
+
+
+@dataclass(slots=True)
+class MoveResult:
+    source: Path
+    destination: Path
+    category: str

@@ -32,7 +32,17 @@ def handle_stats(directory: Path) -> None:
 
 def handle_organize(directory: Path) -> None:
     organizer = get_organizer(directory)
-    organizer.organize()
+    move_results = organizer.organize()
+    if not move_results:
+        print("No files to organize.")
+        return
+
+    count = len(move_results)
+    noun = "file" if count == 1 else "files"
+    print(f"Moved {count} {noun}.")
+
+    for move in move_results:
+        print(f"{move.source.name} -> {move.destination.relative_to(directory)}")
 
 
 def run() -> int:
