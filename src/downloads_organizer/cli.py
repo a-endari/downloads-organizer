@@ -5,7 +5,7 @@ from .organizer import DownloadsOrganizer
 
 def get_organizer(directory: Path) -> DownloadsOrganizer:
     if not directory.exists():
-        raise FileNotFoundError(f"Directory '{directory}' does not exist.")
+        raise FileNotFoundError(f"Directory '{directory.expanduser().resolve()}' does not exist.")
 
     if not directory.is_dir():
         raise NotADirectoryError(f"'{directory}' is not a directory.")
@@ -14,36 +14,24 @@ def get_organizer(directory: Path) -> DownloadsOrganizer:
 
 
 def handle_scan(directory: Path) -> None:
-    try:
-        organizer = get_organizer(directory)
-        results = organizer.scan()
-    except (FileNotFoundError, NotADirectoryError) as error:
-        print(error)
-        return
+    organizer = get_organizer(directory)
+    results = organizer.scan()
 
     for result in results:
         print(f"{result.source.name:<30} -> {result.category}")
 
 
 def handle_stats(directory: Path) -> None:
-    try:
-        organizer = get_organizer(directory)
-        results = organizer.scan()
-    except (FileNotFoundError, NotADirectoryError) as error:
-        print(error)
-        return
+    organizer = get_organizer(directory)
+    results = organizer.scan()
 
     print(f"Directory : {directory.resolve()}")
     print(f"Files     : {len(results)}")
 
 
 def handle_organize(directory: Path) -> None:
-    try:
-        organizer = get_organizer(directory)
-        results = organizer.scan()
-    except (FileNotFoundError, NotADirectoryError) as error:
-        print(error)
-        return
+    organizer = get_organizer(directory)
+    results = organizer.scan()
 
     for result in results:
         print(f"{result.source.name}")
@@ -99,12 +87,16 @@ def run() -> int:
 
     args = parser.parse_args()
 
-    if args.command == "scan":
-        handle_scan(args.directory)
+    try:
+        if args.command == "scan":
+            handle_scan(args.directory)
 
-    elif args.command == "stats":
-        handle_stats(args.directory)
+        elif args.command == "stats":
+            handle_stats(args.directory)
 
-    elif args.command == "organize":
-        handle_organize(args.directory)
+        elif args.command == "organize":
+            handle_organize(args.directory)
+    except (FileNotFoundError, NotADirectoryError) as error:
+        print(error)
+        return 1
     return 0
