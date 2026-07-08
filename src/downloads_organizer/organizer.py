@@ -2,7 +2,7 @@ import shutil
 from pathlib import Path
 
 from .constants import IGNORED_FILENAMES
-from .models import ScanResult
+from .models import ScanResult, MoveResult
 from .rules import FileCategorizer
 
 
@@ -63,15 +63,25 @@ class DownloadsOrganizer:
 
             counter += 1
 
-    def organize(self) -> None:
+    def organize(self) -> list[MoveResult]:
         results = self.scan()
-
+        move_results: list[MoveResult] = []
         for result in results:
             destination = self._get_category_directory(result.category)
 
             self._ensure_directory(destination)
 
+            destination_path = (self._get_destination_path(result),)
+
             shutil.move(
                 result.source,
-                self._get_destination_path(result),
+                destination_path,
             )
+            move_result = MoveResult(
+                source=result.source,
+                destination=destination_path,
+                category=result.category,
+            )
+            move_results.append(move_result)
+
+        return move_results
