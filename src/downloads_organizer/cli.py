@@ -4,8 +4,9 @@ from .organizer import DownloadsOrganizer
 
 
 def get_organizer(directory: Path) -> DownloadsOrganizer:
+    directory = directory.expanduser()
     if not directory.exists():
-        raise FileNotFoundError(f"Directory '{directory.expanduser().resolve()}' does not exist.")
+        raise FileNotFoundError(f"Directory '{directory}' does not exist.")
 
     if not directory.is_dir():
         raise NotADirectoryError(f"'{directory}' is not a directory.")

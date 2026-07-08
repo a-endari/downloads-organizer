@@ -1,3 +1,4 @@
+import shutil
 from pathlib import Path
 
 from .constants import IGNORED_FILENAMES
@@ -33,3 +34,28 @@ class DownloadsOrganizer:
                 )
             )
         return results
+
+    def _get_category_directory(self, category: str) -> Path:
+        """Return the directory for a category."""
+        return self.source_directory / category
+
+    def _ensure_directory(self, directory: Path) -> None:
+        """Create a directory if it does not already exist."""
+        directory.mkdir(exist_ok=True)
+
+    def _get_destination_path(self, result: ScanResult) -> Path:
+        destination = self._get_category_directory(result.category)
+        return destination / result.source.name
+
+    def organize(self) -> None:
+        results = self.scan()
+
+        for result in results:
+            destination = self._get_category_directory(result.category)
+
+            self._ensure_directory(destination)
+
+            shutil.move(
+                result.source,
+                self._get_destination_path(result),
+            )
