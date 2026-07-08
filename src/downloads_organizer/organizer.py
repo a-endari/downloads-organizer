@@ -45,7 +45,23 @@ class DownloadsOrganizer:
 
     def _get_destination_path(self, result: ScanResult) -> Path:
         destination = self._get_category_directory(result.category)
-        return destination / result.source.name
+        candidate = destination / result.source.name
+
+        if not candidate.exists():
+            return candidate
+
+        stem = result.source.stem
+        suffix = result.source.suffix
+
+        counter = 1
+
+        while True:
+            candidate = destination / f"{stem} ({counter}){suffix}"
+
+            if not candidate.exists():
+                return candidate
+
+            counter += 1
 
     def organize(self) -> None:
         results = self.scan()

@@ -32,12 +32,7 @@ def handle_stats(directory: Path) -> None:
 
 def handle_organize(directory: Path) -> None:
     organizer = get_organizer(directory)
-    results = organizer.scan()
-
-    for result in results:
-        print(f"{result.source.name}")
-
-        print(f"  -> {result.category}")
+    organizer.organize()
 
 
 def run() -> int:
