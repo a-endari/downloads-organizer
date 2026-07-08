@@ -30,16 +30,25 @@ def handle_stats(directory: Path) -> None:
     print(f"Files     : {len(results)}")
 
 
-def handle_organize(directory: Path) -> None:
-    organizer = get_organizer(directory)
-    move_results = organizer.organize()
-    if not move_results:
-        print("No files to organize.")
-        return
+def handle_organize(
+    directory: Path,
+    *,
+    dry_run: bool,
+) -> None:
 
+    organizer = get_organizer(directory)
+    if dry_run:
+        move_results = organizer.plan_moves()
+    else:
+        if not move_results:
+            print("No files to organize.")
+            return
+        move_results = organizer.organize()
+
+    verb = "Would move" if dry_run else "Moved"
     count = len(move_results)
     noun = "file" if count == 1 else "files"
-    print(f"Moved {count} {noun}.")
+    print(f"{verb} {count} {noun}.")
 
     for move in move_results:
         print(f"{move.source.name} -> {move.destination.relative_to(directory)}")
@@ -91,6 +100,12 @@ def run() -> int:
         help="Directory to organize (defaults to your Downloads folder.)",
     )
 
+    organize_parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="Show what would be moved without moving files.",
+    )
+
     args = parser.parse_args()
 
     try:
@@ -101,7 +116,7 @@ def run() -> int:
             handle_stats(args.directory)
 
         elif args.command == "organize":
-            handle_organize(args.directory)
+            handle_organize(args.directory, dry_run=args.dry_run)
     except (FileNotFoundError, NotADirectoryError) as error:
         print(error)
         return 1
