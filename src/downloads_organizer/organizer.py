@@ -39,7 +39,8 @@ class DownloadsOrganizer:
         """Return the directory for a category."""
         return self.source_directory / category
 
-    def _ensure_directory(self, directory: Path) -> None:
+    @staticmethod
+    def _ensure_directory(directory: Path) -> None:
         """Create a directory if it does not already exist."""
         directory.mkdir(exist_ok=True)
 

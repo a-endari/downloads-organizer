@@ -1,5 +1,6 @@
 import argparse
 from pathlib import Path
+
 from .organizer import DownloadsOrganizer
 
 
@@ -34,29 +35,29 @@ def handle_organize(
     directory: Path,
     *,
     dry_run: bool,
+    verbose: bool,
 ) -> None:
-
     organizer = get_organizer(directory)
-    if dry_run:
-        move_results = organizer.plan_moves()
-    else:
-        if not move_results:
-            print("No files to organize.")
-            return
+    move_results = organizer.plan_moves()
+    if not move_results:
+        print("No files to organize.")
+        return
+    if not dry_run:
         move_results = organizer.organize()
 
     verb = "Would move" if dry_run else "Moved"
     count = len(move_results)
     noun = "file" if count == 1 else "files"
     print(f"{verb} {count} {noun}.")
-
-    for move in move_results:
-        print(f"{move.source.name} -> {move.destination.relative_to(directory)}")
+    if verbose:
+        for move in move_results:
+            print(f"{move.source.name} -> {move.destination.relative_to(directory)}")
 
 
 def run() -> int:
     parser = argparse.ArgumentParser(
-        prog="downloads-organizer", description="Organize files in your Downloads folder."
+        prog="downloads-organizer",
+        description="Organize files in your Downloads folder.",
     )
     subparser = parser.add_subparsers(
         dest="command",
@@ -106,6 +107,12 @@ def run() -> int:
         help="Show what would be moved without moving files.",
     )
 
+    organize_parser.add_argument(
+        "-v",
+        "--verbose",
+        action="store_true",
+        help="Show verbose output.",
+    )
     args = parser.parse_args()
 
     try:
@@ -116,7 +123,7 @@ def run() -> int:
             handle_stats(args.directory)
 
         elif args.command == "organize":
-            handle_organize(args.directory, dry_run=args.dry_run)
+            handle_organize(args.directory, dry_run=args.dry_run, verbose=args.verbose)
     except (FileNotFoundError, NotADirectoryError) as error:
         print(error)
         return 1
