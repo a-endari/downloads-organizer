@@ -35,9 +35,9 @@ class DownloadsOrganizer:
             )
         return results
 
-    def _get_category_directory(self, category: str) -> Path:
+    def _get_category_directory(self, category: Category) -> Path:
         """Return the directory for a category."""
-        return self.source_directory / category
+        return self.source_directory / category.value
 
     @staticmethod
     def _ensure_directory(directory: Path) -> None:
@@ -88,7 +88,7 @@ class DownloadsOrganizer:
 
         return move_results
 
-    def organize(self, only: Category | None) -> list[MoveResult]:
+    def organize(self, only: Category | None = None) -> list[MoveResult]:
         move_results = self.plan_moves(only=only)
 
         for move in move_results:

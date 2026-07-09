@@ -159,7 +159,7 @@ def run() -> int:
                 args.directory,
                 dry_run=args.dry_run,
                 verbose=args.verbose,
-                only=args.only,
+                only=only,
             )
     except (FileNotFoundError, NotADirectoryError) as error:
         print(error)
