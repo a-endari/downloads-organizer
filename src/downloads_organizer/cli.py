@@ -1,6 +1,7 @@
 import argparse
 from pathlib import Path
 
+from .models import Category
 from .organizer import DownloadsOrganizer
 
 
@@ -36,14 +37,20 @@ def handle_organize(
     *,
     dry_run: bool,
     verbose: bool,
+    only: Category | None = None,
 ) -> None:
     organizer = get_organizer(directory)
-    move_results = organizer.plan_moves()
+
+    if dry_run:
+        move_results = organizer.plan_moves(only=only)
+
+    else:
+        move_results = organizer.organize(only=only)
+
     if not move_results:
         print("No files to organize.")
+
         return
-    if not dry_run:
-        move_results = organizer.organize()
 
     verb = "Would move" if dry_run else "Moved"
     count = len(move_results)
@@ -52,6 +59,18 @@ def handle_organize(
     if verbose:
         for move in move_results:
             print(f"{move.source.name} -> {move.destination.relative_to(directory)}")
+
+
+def parse_category(value: str) -> Category:
+    """Convert a userprovided category into a Category enum."""
+    normalized = value.strip().lower()
+
+    for category in Category:
+        if category.value.lower() == normalized:
+            return category
+    available = ", ".join(category.value for category in Category)
+
+    raise ValueError(f"Unknown category '{value}'. Available categories: {available}")
 
 
 def run() -> int:
@@ -113,6 +132,12 @@ def run() -> int:
         action="store_true",
         help="Show verbose output.",
     )
+
+    organize_parser.add_argument(
+        "--only",
+        metavar="CATEGORY",
+        help="Only organize files from the given category.",
+    )
     args = parser.parse_args()
 
     try:
@@ -123,7 +148,19 @@ def run() -> int:
             handle_stats(args.directory)
 
         elif args.command == "organize":
-            handle_organize(args.directory, dry_run=args.dry_run, verbose=args.verbose)
+            only = None
+            if args.only:
+                try:
+                    only = parse_category(args.only)
+                except ValueError as error:
+                    parser.error(str(error))
+
+            handle_organize(
+                args.directory,
+                dry_run=args.dry_run,
+                verbose=args.verbose,
+                only=args.only,
+            )
     except (FileNotFoundError, NotADirectoryError) as error:
         print(error)
         return 1
