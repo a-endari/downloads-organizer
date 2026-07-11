@@ -9,11 +9,30 @@ class Category(StrEnum):
     DOCUMENT = "Documents"
     PICTURE = "Pictures"
     AUDIO = "Audio"
-    VIDEO = "Videos"
-    CODE = "Codes"
+    VIDEO = "Video"
+    CODE = "Code"
     PROGRAM = "Programs"
     ARCHIVE = "Archives"
     OTHER = "Other"
+
+    @classmethod
+    def values(cls) -> list[str]:
+        """Return list of valid values for this category."""
+        return [category.value for category in cls]
+
+    @classmethod
+    def from_string(cls, value: str) -> "Category":
+        """Return the matching category from a user-provided string."""
+
+        normalized = value.strip().casefold()
+
+        for category in cls:
+            if category.value.casefold() == normalized:
+                return category
+
+        available = ", ".join(cls.values())
+
+        raise ValueError(f"Unknown category '{value}'. Available categories: {available}")
 
 
 @dataclass(slots=True, frozen=True)

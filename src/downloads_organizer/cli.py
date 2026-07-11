@@ -33,11 +33,7 @@ def handle_stats(directory: Path) -> None:
 
 
 def handle_organize(
-    directory: Path,
-    *,
-    dry_run: bool,
-    verbose: bool,
-    only: Category | None = None,
+    directory: Path, *, dry_run: bool, verbose: bool, only: Category | None = None
 ) -> None:
     organizer = get_organizer(directory)
 
@@ -61,16 +57,19 @@ def handle_organize(
             print(f"{move.source.name} -> {move.destination.relative_to(directory)}")
 
 
-def parse_category(value: str) -> Category:
-    """Convert a userprovided category into a Category enum."""
-    normalized = value.strip().lower()
-
-    for category in Category:
-        if category.value.lower() == normalized:
-            return category
-    available = ", ".join(category.value for category in Category)
-
-    raise ValueError(f"Unknown category '{value}'. Available categories: {available}")
+# def parse_category(value: str) -> Category:
+#     """Convert a userprovided category into a Category enum."""
+#     normalized = value.strip().lower()
+#
+#     for category in Category:
+#         if category.value.lower() == normalized:
+#             return category
+#
+#     available = "\n  • ".join(Category.values())
+#
+#     raise ValueError(
+#         f"Unknown category: '{value}'\n\nAvailable categories:\n  • {available}"
+#     )
 
 
 def run() -> int:
@@ -136,7 +135,10 @@ def run() -> int:
     organize_parser.add_argument(
         "--only",
         metavar="CATEGORY",
-        help="Only organize files from the given category.",
+        help=(
+            "Only organize files from a single category.\n"
+            f"Available categories: {', '.join(Category.values())}"
+        ),
     )
     args = parser.parse_args()
 
@@ -148,10 +150,11 @@ def run() -> int:
             handle_stats(args.directory)
 
         elif args.command == "organize":
-            only = None
-            if args.only:
+            only: Category | None = None
+
+            if args.only is not None:
                 try:
-                    only = parse_category(args.only)
+                    only = Category.from_string(args.only)
                 except ValueError as error:
                     parser.error(str(error))
 
