@@ -1,97 +1,222 @@
-# Downloads Organizer
+# 📂 Downloads Organizer
 
-A modern Python command-line application for automatically organizing files in the Downloads folder.
+A modern, cross-platform Python command-line application for organizing downloaded files into categorized folders.
 
-The project is designed as a learning-focused portfolio application that demonstrates professional Python development practices, including package organization, filesystem operations, automation, testing, logging, and clean software architecture.
-
-> **Status:** 🚧 Under active development
+The project is built as a software engineering portfolio piece, emphasizing clean architecture, modern Python practices,
+strong typing, and maintainable code rather than simply moving files.
 
 ---
 
-## Features
+## ✨ Features
 
-Current features
+### File Organization
 
+- Organize files into categorized folders
+- Built-in categories:
+    - Documents
+    - Pictures
+    - Audio
+    - Video
+    - Code
+    - Programs
+    - Archives
+    - Other
+- Category filtering with `--only`
+- Case-insensitive category names
+- Automatic creation of destination folders
+
+### Safety
+
+- Dry-run mode (`--dry-run`)
 - Scan directories without modifying files
-- Categorize files by extension
-- Ignore operating system files (e.g. `.DS_Store`, `.localized`)
-- Clean project architecture using the `src` layout
-- Type hints throughout the codebase
-- Dataclass-based models
+- Uses `pathlib` for safe cross-platform path handling
 
-Planned features
+### Statistics
 
-- Move files safely
-- JSON configuration
-- Dry-run mode
-- Undo previous operations
-- Duplicate detection
-- Logging
-- Automated scheduling
-- Unit tests
-- GitHub Actions CI
+- Scan a directory without moving files
+- Display per-category statistics
+- Count files before organizing
+
+### Command Line Interface
+
+- Modern `argparse` interface
+- Helpful error messages
+- Strongly typed category parsing
+- Verbose output (`--verbose`)
 
 ---
 
-## Example
+## 🚀 Installation
 
-```text
-$ python -m downloads_organizer
+Clone the repository
 
-resume.pdf                     -> Documents
-photo.jpg                      -> Pictures
-movie.mp4                      -> Videos
-archive.zip                    -> Archives
+```bash
+git clone https://github.com/<your-name>/downloads-organizer.git
+cd downloads-organizer
+```
+
+Create and activate a virtual environment
+
+```bash
+python -m venv .venv
+source .venv/bin/activate
+```
+
+Install the project
+
+```bash
+pip install -e .
 ```
 
 ---
 
-## Project Structure
+## 🖥 Usage
+
+Scan a directory
+
+```bash
+downloads-organizer scan ~/Downloads
+```
+
+Display statistics
+
+```bash
+downloads-organizer stats ~/Downloads
+```
+
+Organize files
+
+```bash
+downloads-organizer organize ~/Downloads
+```
+
+Preview changes without moving files
+
+```bash
+downloads-organizer organize ~/Downloads --dry-run
+```
+
+Organize only documents
+
+```bash
+downloads-organizer organize ~/Downloads --only Documents
+```
+
+Category names are case-insensitive.
+
+These are equivalent:
 
 ```text
+Documents
+documents
+DOCUMENTS
+DoCuMeNtS
+```
+
+---
+
+## 📁 Project Structure
+
+```
 downloads-organizer/
-├── config/
-├── docs/
-├── examples/
-├── logs/
+│
 ├── src/
+│   └── downloads_organizer/
+│       ├── cli.py
+│       ├── models.py
+│       ├── organizer.py
+│       ├── rules.py
+│       ├── statistics.py
+│       └── __main__.py
+│
 ├── tests/
-└── README.md
+├── pyproject.toml
+├── README.md
+└── LICENSE
 ```
+
+### Module Overview
+
+| Module          | Responsibility                              |
+|-----------------|---------------------------------------------|
+| `cli.py`        | Command-line interface and argument parsing |
+| `models.py`     | Domain models, dataclasses, and enums       |
+| `organizer.py`  | Core organization logic                     |
+| `rules.py`      | File extension to category mapping          |
+| `statistics.py` | Directory statistics                        |
 
 ---
 
-## Technologies
+## 🏗 Design Decisions
+
+This project intentionally emphasizes software engineering practices.
+
+### `pathlib`
+
+Uses `pathlib` instead of `os.path` for modern, object-oriented filesystem operations.
+
+### `dataclasses`
+
+Uses dataclasses to reduce boilerplate while keeping models explicit and type-safe.
+
+### `StrEnum`
+
+Categories are represented using `StrEnum` instead of plain strings, providing:
+
+- Better IDE support
+- Type safety
+- Easier refactoring
+- Cleaner business logic
+
+### Type Hints
+
+The project uses type hints throughout to improve readability, maintainability, and static analysis.
+
+### Minimal Dependencies
+
+The project currently relies almost entirely on Python's standard library to demonstrate how much can be achieved
+without external packages.
+
+---
+
+## 📋 Roadmap
+
+### Completed
+
+- [x] Scan command
+- [x] Statistics command
+- [x] Organize command
+- [x] Dry-run mode
+- [x] Verbose mode
+- [x] Category filtering
+- [x] `StrEnum` category model
+- [x] Case-insensitive category parsing
+
+### Planned
+
+- [ ] Duplicate detection
+- [ ] Recursive directory organization
+- [ ] Ignore patterns
+- [ ] Configuration file (TOML)
+- [ ] Custom categories
+- [ ] Rich terminal output
+- [ ] Progress bars
+- [ ] Undo support
+- [ ] Logging
+- [ ] Unit tests
+- [ ] Continuous Integration (GitHub Actions)
+
+---
+
+## 🧪 Requirements
 
 - Python 3.13+
-- pathlib
-- dataclasses
-- argparse
-- logging
-- shutil
-- json
-
-Only the Python standard library is used whenever possible.
+- Windows
+- macOS
+- Linux
 
 ---
 
-## Roadmap
+## 📄 License
 
-- [x] Project structure
-- [x] Package layout
-- [x] File categorization
-- [x] Read-only scanning
-- [ ] JSON configuration
-- [ ] Safe file moving
-- [ ] Logging
-- [ ] Dry-run mode
-- [ ] Undo support
-- [ ] Unit tests
-- [ ] Scheduled execution
-- [ ] GitHub Actions
-
----
-
-## License
-
-MIT
+This project is licensed under the MIT License.
