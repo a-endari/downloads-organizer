@@ -81,3 +81,7 @@ logs/*
 # ==========================================
 
 config/local_rules.json
+
+# My test folder
+test/
+

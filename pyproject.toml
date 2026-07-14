@@ -1,0 +1,17 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "downloads-organizer"
+version = "0.1.0"
+description = "Organize downloaded files into categorized folders."
+readme = "README.md"
+requires-python = ">=3.13"
+license = { text = "MIT" }
+
+[project.scripts]
+downloads-organizer = "downloads_organizer.main:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]

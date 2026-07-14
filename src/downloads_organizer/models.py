@@ -32,7 +32,9 @@ class Category(StrEnum):
 
         available = ", ".join(cls.values())
 
-        raise ValueError(f"Unknown category '{value}'. Available categories: {available}")
+        raise ValueError(
+            f"Unknown category '{value}'. Available categories: {available}"
+        )
 
 
 @dataclass(slots=True, frozen=True)
