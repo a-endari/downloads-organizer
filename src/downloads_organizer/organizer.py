@@ -1,4 +1,5 @@
 import shutil
+from collections.abc import Iterator
 from pathlib import Path
 
 from .constants import IGNORED_FILENAMES
@@ -9,14 +10,18 @@ from .rules import FileCategorizer
 class DownloadsOrganizer:
     """Scan directories and determine where files belong."""
 
-    def __init__(self, source_directory: Path) -> None:
+    def __init__(
+        self,
+        source_directory: Path,
+        *,
+        recursive: bool = False,
+    ) -> None:
         self.source_directory = source_directory
+        self.recursive = recursive
         self.categorizer = FileCategorizer()
 
-    def scan(self) -> list[ScanResult]:
-        """Scan the directory and return categorized files."""
-
-        results: list[ScanResult] = []
+    def _iter_files(self) -> Iterator[Path]:
+        """Yield files from the source directory."""
 
         for item in self.source_directory.iterdir():
             if item.is_dir():
@@ -25,6 +30,14 @@ class DownloadsOrganizer:
             if item.name in IGNORED_FILENAMES:
                 continue
 
+            yield item
+
+    def scan(self) -> list[ScanResult]:
+        """Scan the directory and return categorized files."""
+
+        results: list[ScanResult] = []
+
+        for item in self._iter_files():
             category = self.categorizer.get_category(item)
 
             results.append(
@@ -37,7 +50,7 @@ class DownloadsOrganizer:
 
     def _get_category_directory(self, category: Category) -> Path:
         """Return the directory for a category."""
-        return self.source_directory / category.value
+        return self.source_directory / category
 
     @staticmethod
     def _ensure_directory(directory: Path) -> None:
