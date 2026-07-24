@@ -13,6 +13,7 @@ class Category(StrEnum):
     CODE = "Code"
     PROGRAM = "Programs"
     ARCHIVE = "Archives"
+    EBOOK = "Ebooks"
     OTHER = "Other"
 
     @classmethod

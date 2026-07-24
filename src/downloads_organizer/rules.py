@@ -6,33 +6,148 @@ from .models import Category
 class FileCategorizer:
     """Determine the category of a file based on its extension."""
 
-    DEFAULT_RULES: dict[str, Category] = {
-        ".pdf": Category.DOCUMENT,
-        ".doc": Category.DOCUMENT,
-        ".docx": Category.DOCUMENT,
-        ".txt": Category.DOCUMENT,
-        ".jpg": Category.PICTURE,
-        ".webp": Category.PICTURE,
-        ".svg": Category.PICTURE,
-        ".jpeg": Category.PICTURE,
-        ".png": Category.PICTURE,
-        ".gif": Category.PICTURE,
-        ".mp4": Category.VIDEO,
-        ".mkv": Category.VIDEO,
-        ".mov": Category.VIDEO,
-        ".mp3": Category.AUDIO,
-        ".flac": Category.AUDIO,
-        ".wav": Category.AUDIO,
-        ".zip": Category.ARCHIVE,
-        ".rar": Category.ARCHIVE,
-        ".7z": Category.ARCHIVE,
-        ".py": Category.CODE,
-        ".js": Category.CODE,
-        ".html": Category.CODE,
-        ".css": Category.CODE,
-        ".exe": Category.PROGRAM,
-        ".apk": Category.PROGRAM,
-        ".dmg": Category.PROGRAM,
+    DOCUMENT_EXTENSIONS = {
+        ".pdf",
+        ".doc",
+        ".docx",
+        ".odt",
+        ".rtf",
+        ".txt",
+        ".md",
+        ".tex",
+        ".pages",
+        ".csv",
+        ".tsv",
+        ".xls",
+        ".xlsx",
+        ".ods",
+        ".ppt",
+        ".djvu",
+        ".pptx",
+        ".key",
+    }
+
+    EBOOK_EXTENSIONS = {
+        ".epub",
+        ".mobi",
+        ".azw",
+        ".azw3",
+        ".fb2",
+    }
+
+    IMAGE_EXTENSIONS = {
+        ".jpg",
+        ".jpeg",
+        ".png",
+        ".webp",
+        ".gif",
+        ".bmp",
+        ".svg",
+        ".tif",
+        ".tiff",
+        "jfif",
+        ".heic",
+        ".heif",
+        ".avif",
+        ".ico",
+    }
+
+    VIDEO_EXTENSIONS = {
+        ".mp4",
+        ".mkv",
+        ".mov",
+        ".avi",
+        ".wmv",
+        ".webm",
+        ".m4v",
+        ".flv",
+    }
+
+    AUDIO_EXTENSIONS = {
+        ".mp3",
+        ".wav",
+        ".flac",
+        ".aac",
+        ".ogg",
+        ".m4a",
+        ".wma",
+    }
+
+    ARCHIVE_EXTENSIONS = {
+        ".zip",
+        ".rar",
+        ".7z",
+        ".tar",
+        ".gz",
+        ".bz2",
+        ".xz",
+        ".tgz",
+        ".iso",
+    }
+
+    PROGRAM_EXTENSIONS = {
+        ".exe",
+        ".msi",
+        ".dmg",
+        ".pkg",
+        ".app",
+        ".apk",
+        ".deb",
+        ".rpm",
+        ".appimage",
+    }
+
+    CODE_EXTENSIONS = {
+        ".py",
+        ".ipynb",
+        ".js",
+        ".ts",
+        ".jsx",
+        ".tsx",
+        ".html",
+        ".css",
+        ".java",
+        ".kt",
+        ".swift",
+        ".c",
+        ".cpp",
+        ".h",
+        ".hpp",
+        ".cs",
+        ".go",
+        ".rs",
+        ".php",
+        ".rb",
+        ".sql",
+        ".sh",
+        ".zsh",
+        ".ps1",
+        ".bat",
+        ".cmd",
+        ".json",
+        ".toml",
+        ".yaml",
+        ".yml",
+        ".xml",
+        ".ini",
+        ".cfg",
+    }
+
+    CATEGORY_EXTENSIONS = {
+        Category.DOCUMENT: DOCUMENT_EXTENSIONS,
+        Category.EBOOK: EBOOK_EXTENSIONS,
+        Category.PICTURE: IMAGE_EXTENSIONS,
+        Category.VIDEO: VIDEO_EXTENSIONS,
+        Category.AUDIO: AUDIO_EXTENSIONS,
+        Category.ARCHIVE: ARCHIVE_EXTENSIONS,
+        Category.PROGRAM: PROGRAM_EXTENSIONS,
+        Category.CODE: CODE_EXTENSIONS,
+    }
+
+    DEFAULT_RULES = {
+        extension: category
+        for category, extensions in CATEGORY_EXTENSIONS.items()
+        for extension in extensions
     }
 
     def __init__(self, rules: dict[str, Category] | None = None) -> None:
