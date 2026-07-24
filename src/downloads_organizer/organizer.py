@@ -13,11 +13,8 @@ class DownloadsOrganizer:
     def __init__(
         self,
         source_directory: Path,
-        *,
-        recursive: bool = False,
     ) -> None:
         self.source_directory = source_directory
-        self.recursive = recursive
         self.categorizer = FileCategorizer()
 
     def _iter_files(self) -> Iterator[Path]:

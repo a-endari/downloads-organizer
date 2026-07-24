@@ -33,7 +33,11 @@ def handle_stats(directory: Path) -> None:
 
 
 def handle_organize(
-    directory: Path, *, dry_run: bool, verbose: bool, only: Category | None = None
+    directory: Path,
+    *,
+    dry_run: bool,
+    verbose: bool,
+    only: Category | None = None,
 ) -> None:
     organizer = get_organizer(directory)
 
@@ -55,21 +59,6 @@ def handle_organize(
     if verbose:
         for move in move_results:
             print(f"{move.source.name} -> {move.destination.relative_to(directory)}")
-
-
-# def parse_category(value: str) -> Category:
-#     """Convert a userprovided category into a Category enum."""
-#     normalized = value.strip().lower()
-#
-#     for category in Category:
-#         if category.value.lower() == normalized:
-#             return category
-#
-#     available = "\n  • ".join(Category.values())
-#
-#     raise ValueError(
-#         f"Unknown category: '{value}'\n\nAvailable categories:\n  • {available}"
-#     )
 
 
 def run() -> int:

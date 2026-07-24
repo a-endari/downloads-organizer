@@ -17,8 +17,9 @@ class Category(StrEnum):
 
     @classmethod
     def values(cls) -> list[str]:
-        """Return list of valid values for this category."""
-        return [category.value for category in cls]
+        """Return the display names of all categories."""
+
+        return list(cls)
 
     @classmethod
     def from_string(cls, value: str) -> "Category":
@@ -32,9 +33,7 @@ class Category(StrEnum):
 
         available = ", ".join(cls.values())
 
-        raise ValueError(
-            f"Unknown category '{value}'. Available categories: {available}"
-        )
+        raise ValueError(f"Unknown category '{value}'. Available categories: {available}")
 
 
 @dataclass(slots=True, frozen=True)
