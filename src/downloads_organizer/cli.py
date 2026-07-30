@@ -1,6 +1,7 @@
 import argparse
 from pathlib import Path
 
+from downloads_organizer.config import load_config
 from .models import Category
 from .organizer import DownloadsOrganizer
 
@@ -13,7 +14,8 @@ def get_organizer(directory: Path) -> DownloadsOrganizer:
     if not directory.is_dir():
         raise NotADirectoryError(f"'{directory}' is not a directory.")
 
-    return DownloadsOrganizer(directory)
+    config = load_config()
+    return DownloadsOrganizer(directory, config=config)
 
 
 def handle_scan(directory: Path) -> None:

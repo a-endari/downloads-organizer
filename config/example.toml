@@ -1,0 +1,12 @@
+[ignore]
+
+files = [
+  ".DS_Store",
+  ".tester",
+  ".gitignore",
+  "NonExistanceFile"
+]
+
+directories = [
+  "__pycache__",
+]

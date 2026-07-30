@@ -2,7 +2,7 @@ import shutil
 from collections.abc import Iterator
 from pathlib import Path
 
-from .constants import IGNORED_FILENAMES
+from downloads_organizer.config import Config
 from .models import Category, MoveResult, ScanResult
 from .rules import FileCategorizer
 
@@ -13,8 +13,10 @@ class DownloadsOrganizer:
     def __init__(
         self,
         source_directory: Path,
+        config: Config | None = None,
     ) -> None:
         self.source_directory = source_directory
+        self.config = config or Config()
         self.categorizer = FileCategorizer()
 
     def _iter_files(self) -> Iterator[Path]:
@@ -24,7 +26,7 @@ class DownloadsOrganizer:
             if item.is_dir():
                 continue
 
-            if item.name in IGNORED_FILENAMES:
+            if item.name in self.config.ignored_files:
                 continue
 
             yield item
