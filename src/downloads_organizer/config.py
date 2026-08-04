@@ -15,7 +15,8 @@ DEFAULT_IGNORED_FILES: set[str] = {
 class Config:
     """Application configuration."""
 
-    ignored_files: set[str] = field(default_factory=lambda: DEFAULT_IGNORED_FILES.copy())
+    ignored_files: set[str] = field(
+        default_factory=lambda: DEFAULT_IGNORED_FILES.copy())
     ignored_directories: set[str] = field(default_factory=set)
 
 

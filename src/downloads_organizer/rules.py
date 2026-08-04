@@ -161,3 +161,11 @@ class FileCategorizer:
         """
         extension = file_path.suffix.lower()
         return self.rules.get(extension, Category.OTHER)
+
+
+# Directory types that should be treated as files.
+PACKAGE_EXTENSIONS = {
+    ".app",
+    ".bundle",
+    ".framework",
+}

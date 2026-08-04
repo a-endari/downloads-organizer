@@ -4,7 +4,7 @@ from pathlib import Path
 
 from downloads_organizer.config import Config
 from .models import Category, MoveResult, ScanResult
-from .rules import FileCategorizer
+from .rules import FileCategorizer, PACKAGE_EXTENSIONS
 
 
 class DownloadsOrganizer:
@@ -19,11 +19,16 @@ class DownloadsOrganizer:
         self.config = config or Config()
         self.categorizer = FileCategorizer()
 
+    @staticmethod
+    def _is_package(path: Path) -> bool:
+        """Return True if the path is a filesystem package treated as a file."""
+        return path.suffix.lower() in PACKAGE_EXTENSIONS
+
     def _iter_files(self) -> Iterator[Path]:
         """Yield files from the source directory."""
 
         for item in self.source_directory.iterdir():
-            if item.is_dir():
+            if item.is_dir() and not self._is_package(item):
                 continue
 
             if item.name in self.config.ignored_files:
