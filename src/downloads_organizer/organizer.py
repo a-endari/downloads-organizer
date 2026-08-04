@@ -24,6 +24,23 @@ class DownloadsOrganizer:
         """Return True if the path is a filesystem package treated as a file."""
         return path.suffix.lower() in PACKAGE_EXTENSIONS
 
+    def _iter_folders(self) -> Iterator[Path]:
+        """Yield directories that should be moved."""
+        for item in self.source_directory.iterdir():
+            if not item.is_dir():
+                continue
+
+            if self._is_package(item):
+                continue
+
+            if item.name in self.config.ignored_directories:
+                continue
+
+            if item.name in Category.directory_names():
+                continue
+
+            yield item
+
     def _iter_files(self) -> Iterator[Path]:
         """Yield files from the source directory."""
 
@@ -48,6 +65,13 @@ class DownloadsOrganizer:
                 ScanResult(
                     source=item,
                     category=category,
+                )
+            )
+        for folder in self._iter_folders():
+            results.append(
+                ScanResult(
+                    source=folder,
+                    category=Category.OTHER_FOLDERS,
                 )
             )
         return results

@@ -75,6 +75,7 @@ class FileCategorizer:
 
     ARCHIVE_EXTENSIONS = {
         ".zip",
+        ".tbz2",
         ".rar",
         ".7z",
         ".tar",

@@ -14,7 +14,8 @@ class Category(StrEnum):
     PROGRAM = "Programs"
     ARCHIVE = "Archives"
     EBOOK = "Ebooks"
-    OTHER = "Other"
+    OTHER = "Other Files"
+    OTHER_FOLDERS = "Other Folders"
 
     @classmethod
     def values(cls) -> list[str]:
@@ -34,7 +35,14 @@ class Category(StrEnum):
 
         available = ", ".join(cls.values())
 
-        raise ValueError(f"Unknown category '{value}'. Available categories: {available}")
+        raise ValueError(
+            f"Unknown category '{value}'. Available categories: {available}",
+        )
+
+    @classmethod
+    def directory_names(cls) -> set[str]:
+        """Return the directory names used by category folders."""
+        return {category.value for category in cls}
 
 
 @dataclass(slots=True, frozen=True)
