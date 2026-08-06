@@ -18,14 +18,6 @@ def get_organizer(directory: Path) -> DownloadsOrganizer:
     return DownloadsOrganizer(directory, config=config)
 
 
-def handle_scan(directory: Path) -> None:
-    organizer = get_organizer(directory)
-    results = organizer.scan()
-
-    for result in results:
-        print(f"{result.source.name:<30} -> {result.category}")
-
-
 def handle_stats(directory: Path) -> None:
     organizer = get_organizer(directory)
     results = organizer.scan()
@@ -71,17 +63,6 @@ def run() -> int:
     subparser = parser.add_subparsers(
         dest="command",
         required=True,
-    )
-    scan_parser = subparser.add_parser(
-        "scan",
-        help="Scan a directory without moving files.",
-    )
-    scan_parser.add_argument(
-        "directory",
-        nargs="?",
-        type=Path,
-        default=Path.home() / "Downloads",
-        help="Directory to scan (defaults to your Downloads folder.)",
     )
 
     stat_parser = subparser.add_parser(
@@ -134,10 +115,7 @@ def run() -> int:
     args = parser.parse_args()
 
     try:
-        if args.command == "scan":
-            handle_scan(args.directory)
-
-        elif args.command == "stats":
+        if args.command is None or args.command == "stats":
             handle_stats(args.directory)
 
         elif args.command == "organize":

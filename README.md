@@ -34,9 +34,9 @@ This philosophy keeps the application focused, maintainable, and easy to underst
 
 ### 📁 File Organization
 
-- Organize loose files into categorized folders
+- Organize both loose files and loose folders into categorized folders
 - Automatic file categorization based on file extension
-- Preserve downloaded folders
+- Organize loose folders into the `Other Folders` category
 - Automatic creation of destination directories
 - Safe collision handling
 - Cross-platform filesystem support
@@ -51,7 +51,8 @@ This philosophy keeps the application focused, maintainable, and easy to underst
 - Programs
 - Archives
 - Ebooks
-- Other
+- Other Files
+- Other Folders
 
 ### 💻 Command Line Experience
 
@@ -108,17 +109,21 @@ After installation you can use either command:
 downloads-organizer
 ```
 
-or the shorter alias:
-
-```bash
-dlo
-```
-
-*(The `dlo` alias is a shell alias configured locally and is not created automatically by the package.)*
-
 ---
 
 ## 🖥 Usage
+
+Show an overview of your Downloads folder.
+
+```bash
+downloads-organizer
+```
+
+Preview changes without moving any files:
+
+```bash
+downloads-organizer organize ~/Downloads --dry-run
+```
 
 Organize a Downloads folder:
 
@@ -126,28 +131,16 @@ Organize a Downloads folder:
 downloads-organizer organize ~/Downloads
 ```
 
-or
-
-```bash
-dlo organize ~/Downloads
-```
-
-Preview changes without moving any files:
-
-```bash
-dlo organize ~/Downloads --dry-run
-```
-
 Organize only one category:
 
 ```bash
-dlo organize ~/Downloads --only Documents
+downloads-organizer organize ~/Downloads --only Documents
 ```
 
 Enable verbose output:
 
 ```bash
-dlo organize ~/Downloads --verbose
+downloads-organizer organize ~/Downloads --verbose
 ```
 
 Category names are case-insensitive.
@@ -232,33 +225,19 @@ The application follows a layered architecture to separate responsibilities and 
 the command-line interface.
 
 ```text
-Terminal
-    │
-    ▼
-CLI (argparse)
-    │
-    ▼
-Application Layer
-(main.py / cli.py)
-    │
-    ▼
-Business Logic
-(organizer.py)
-    │
-    ├──────────────┐
-    ▼              ▼
-Models        Configuration
-(models.py)   (future)
-    │
-    ▼
-Filesystem
-(pathlib / shutil)
+CLI
+│
+├── organizer.py
+├── statistics.py
+├── models.py
+├── config.py
+└── pathlib/shutil
 ```
 
 ### Layer Responsibilities
 
 | Layer                 | Responsibility                                                          |
-|-----------------------|-------------------------------------------------------------------------|
+| --------------------- | ----------------------------------------------------------------------- |
 | **CLI**               | Parse command-line arguments, validate user input, and display results. |
 | **Application Layer** | Connect the command-line interface to the business logic.               |
 | **Business Logic**    | Scan files, categorize them, and perform organization.                  |
@@ -390,8 +369,7 @@ If not, the simpler solution is usually preferred.
 
 ## 🗺 Roadmap
 
-Downloads Organizer is being developed incrementally, with each milestone introducing new concepts while maintaining a
-clean, stable codebase.
+Downloads Organizer is being developed incrementally, with each milestone introducing new concepts while maintaining a clean, stable codebase.
 
 ### ✅ Completed
 
@@ -405,13 +383,12 @@ clean, stable codebase.
 - Verbose output
 - `StrEnum`-based categories
 - Modern `pathlib` filesystem operations
+- Configuration system
 
 ---
 
 ### 🚧 In Progress
 
-- Better handling of downloaded folders
-- Configuration system
 - Ignore patterns
 - Improved collision handling
 
@@ -476,38 +453,9 @@ This allows both interactive and fully automated workflows.
 
 ---
 
-## 🧪 Development Workflow
-
-Every feature follows approximately the same workflow:
-
-1. Design
-2. Implementation
-3. Manual testing
-4. Refactoring
-5. Documentation
-6. Commit
-
-The project intentionally favors many small, focused commits over large feature dumps.
-
-Conventional Commits are used to keep the Git history clean and easy to understand.
-
----
-
 ## 🤝 Contributing
 
-Although this project is primarily a personal portfolio and learning project, suggestions, bug reports, and constructive
-feedback are always welcome.
-
-If you discover a bug or have an idea that fits the project's philosophy, feel free to open an issue or submit a pull
-request.
-
-Before contributing, please keep the following principles in mind:
-
-- Prefer readability over cleverness.
-- Prefer the Python Standard Library whenever practical.
-- Keep functions small and focused.
-- Avoid unnecessary dependencies.
-- Keep the project focused on organizing Downloads folders.
+Although this project is primarily a personal portfolio and learning project, suggestions, bug reports, and constructive feedback are always welcome.
 
 ---
 
