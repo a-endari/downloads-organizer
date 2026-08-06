@@ -37,22 +37,25 @@ This philosophy keeps the application focused, maintainable, and easy to underst
 - Organize both loose files and loose folders into categorized folders
 - Automatic file categorization based on file extension
 - Organize loose folders into the `Other Folders` category
+- Safely treats macOS package directories (`.app`, `.bundle`, `.framework`) as single files
 - Automatic creation of destination directories
 - Safe collision handling
 - Cross-platform filesystem support
 
 ### 📂 Built-in Categories
 
-- Documents
-- Pictures
-- Audio
-- Video
-- Code
-- Programs
-- Archives
-- Ebooks
-- Other Files
-- Other Folders
+| Category | Folder Name | Common Extensions / Descriptions |
+| --- | --- | --- |
+| **Documents** | `Documents` | `.pdf`, `.docx`, `.xlsx`, `.pptx`, `.txt`, `.md`, `.csv`, `.pages` |
+| **Pictures** | `Pictures` | `.jpg`, `.jpeg`, `.png`, `.webp`, `.gif`, `.svg`, `.heic`, `.avif` |
+| **Audio** | `Audio` | `.mp3`, `.wav`, `.flac`, `.aac`, `.m4a`, `.ogg` |
+| **Video** | `Video` | `.mp4`, `.mkv`, `.mov`, `.webm`, `.avi`, `.m4v` |
+| **Code** | `Code` | `.py`, `.js`, `.ts`, `.html`, `.css`, `.json`, `.toml`, `.cpp`, `.rs` |
+| **Programs** | `Programs` | `.exe`, `.dmg`, `.pkg`, `.deb`, `.msi`, `.apk`, `.appimage` |
+| **Archives** | `Archives` | `.zip`, `.tar`, `.gz`, `.7z`, `.rar`, `.bz2`, `.iso` |
+| **Ebooks** | `Ebooks` | `.epub`, `.mobi`, `.azw`, `.azw3`, `.fb2` |
+| **Other Files** | `Other Files` | Files with unrecognized or rare extensions |
+| **Other Folders** | `Other Folders` | Loose directories (excluding macOS package bundles) |
 
 ### 💻 Command Line Experience
 
@@ -60,6 +63,7 @@ This philosophy keeps the application focused, maintainable, and easy to underst
 - Helpful error messages
 - Case-insensitive category names
 - Filter organization by category
+- Implicit `stats` default command
 - Dry-run preview mode
 - Verbose output
 
@@ -116,6 +120,8 @@ downloads-organizer
 Show an overview of your Downloads folder.
 
 ```bash
+downloads-organizer stats
+# or simply:
 downloads-organizer
 ```
 
@@ -201,12 +207,15 @@ downloads-organizer/
 │       ├── __init__.py
 │       ├── __main__.py
 │       ├── cli.py
+│       ├── config.py
 │       ├── constants.py
+│       ├── logger.py
 │       ├── main.py
 │       ├── models.py
 │       ├── organizer.py
 │       ├── rules.py
-│       └── statistics.py
+│       ├── scheduler.py
+│       └── utils.py
 ├── tests/
 ├── pyproject.toml
 ├── README.md
@@ -228,7 +237,6 @@ the command-line interface.
 CLI
 │
 ├── organizer.py
-├── statistics.py
 ├── models.py
 ├── config.py
 └── pathlib/shutil
