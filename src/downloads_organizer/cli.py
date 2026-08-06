@@ -1,4 +1,5 @@
 import argparse
+import sys
 from pathlib import Path
 
 from downloads_organizer.config import load_config
@@ -55,6 +56,13 @@ def handle_organize(
             print(f"{move.source.name} -> {move.destination.relative_to(directory)}")
 
 
+def _insert_default_command(argv: list[str], commands: set[str]) -> list[str]:
+    """Allow 'stats' to be omitted: bare dir/no-arg invocations imply 'stats'."""
+    if argv and (argv[0] in commands or argv[0] in ("-h", "--help")):
+        return argv
+    return ["stats", *argv]
+
+
 def run() -> int:
     parser = argparse.ArgumentParser(
         prog="downloads-organizer",
@@ -62,7 +70,6 @@ def run() -> int:
     )
     subparser = parser.add_subparsers(
         dest="command",
-        required=True,
     )
 
     stat_parser = subparser.add_parser(
@@ -112,7 +119,9 @@ def run() -> int:
             f"Available categories: {', '.join(Category.values())}"
         ),
     )
-    args = parser.parse_args()
+    commands = set(subparser.choices)
+    argv = _insert_default_command(sys.argv[1:], commands)
+    args = parser.parse_args(argv)
 
     try:
         if args.command is None or args.command == "stats":
