@@ -3,6 +3,22 @@ from pathlib import Path
 from .models import Category
 
 
+def _build_default_rules(
+    category_extensions: dict[Category, set[str]],
+) -> dict[str, Category]:
+    """Flatten category->extensions into extension->category, erroring on overlap."""
+    rules: dict[str, Category] = {}
+    for category, extensions in category_extensions.items():
+        for extension in extensions:
+            if extension in rules:
+                raise ValueError(
+                    f"Extension '{extension}' is assigned to both "
+                    f"{rules[extension].value!r} and {category.value!r}."
+                )
+            rules[extension] = category
+    return rules
+
+
 class FileCategorizer:
     """Determine the category of a file based on its extension."""
 
@@ -45,7 +61,7 @@ class FileCategorizer:
         ".svg",
         ".tif",
         ".tiff",
-        "jfif",
+        ".jfif",
         ".heic",
         ".heif",
         ".avif",
@@ -145,11 +161,7 @@ class FileCategorizer:
         Category.CODE: CODE_EXTENSIONS,
     }
 
-    DEFAULT_RULES = {
-        extension: category
-        for category, extensions in CATEGORY_EXTENSIONS.items()
-        for extension in extensions
-    }
+    DEFAULT_RULES = _build_default_rules(CATEGORY_EXTENSIONS)
 
     def __init__(self, rules: dict[str, Category] | None = None) -> None:
         self.rules = rules or self.DEFAULT_RULES
