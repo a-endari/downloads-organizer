@@ -1,12 +1,10 @@
 [ignore]
 
 files = [
-  ".DS_Store",
-  ".tester",
-  ".gitignore",
-  "NonExistanceFile"
+    ".DS_Store",
+    ".gitignore",
 ]
 
 directories = [
-  "__pycache__",
+    "__pycache__",
 ]

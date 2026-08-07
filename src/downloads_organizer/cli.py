@@ -5,6 +5,7 @@ from pathlib import Path
 from downloads_organizer.config import load_config
 from .models import Category
 from .organizer import DownloadsOrganizer
+from .constants import DEFAULT_DOWNLOADS_DIR
 
 
 def get_organizer(directory: Path) -> DownloadsOrganizer:
@@ -81,7 +82,7 @@ def run() -> int:
         "directory",
         nargs="?",
         type=Path,
-        default=Path.home() / "Downloads",
+        default=DEFAULT_DOWNLOADS_DIR,
         help="Directory to analyze (defaults to your Downloads folder.)",
     )
 
@@ -94,7 +95,7 @@ def run() -> int:
         "directory",
         nargs="?",
         type=Path,
-        default=Path.home() / "Downloads",
+        default=DEFAULT_DOWNLOADS_DIR,
         help="Directory to organize (defaults to your Downloads folder.)",
     )
 
