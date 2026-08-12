@@ -3,8 +3,9 @@ from collections.abc import Iterator
 from pathlib import Path
 
 from downloads_organizer.config import Config
+
 from .models import Category, MoveResult, ScanResult
-from .rules import FileCategorizer, PACKAGE_EXTENSIONS
+from .rules import PACKAGE_EXTENSIONS, FileCategorizer
 
 
 class DownloadsOrganizer:

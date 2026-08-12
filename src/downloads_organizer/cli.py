@@ -3,9 +3,10 @@ import sys
 from pathlib import Path
 
 from downloads_organizer.config import load_config
+
+from .constants import DEFAULT_DOWNLOADS_DIR
 from .models import Category
 from .organizer import DownloadsOrganizer
-from .constants import DEFAULT_DOWNLOADS_DIR
 
 
 def get_organizer(directory: Path) -> DownloadsOrganizer:

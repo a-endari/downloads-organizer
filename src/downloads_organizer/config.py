@@ -1,6 +1,7 @@
-import tomllib
 from dataclasses import dataclass, field
 from pathlib import Path
+
+import tomllib
 
 from .constants import DEFAULT_IGNORED_FILES
 
@@ -34,3 +35,4 @@ def load_config(path: Path | None = None) -> Config:
         ignored_files=ignored_files,
         ignored_directories=ignored_directories,
     )
+

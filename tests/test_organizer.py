@@ -1,6 +1,7 @@
 from pathlib import Path
-from downloads_organizer.organizer import DownloadsOrganizer
+
 from downloads_organizer.config import Config
+from downloads_organizer.organizer import DownloadsOrganizer
 
 
 def test_ignored_file_is_not_moved(tmp_path: Path) -> None:
@@ -149,3 +150,34 @@ def test_plan_moves_does_not_move_files(tmp_path: Path) -> None:
 
     assert source.exists()
     assert len(moves) == 1
+
+
+def test_duplicate_file_gets_renamed(tmp_path: Path) -> None:
+    source = tmp_path / "report.pdf"
+    source.write_text("new")
+
+    documents = tmp_path / "Documents"
+    documents.mkdir()
+    existing = documents / "report.pdf"
+    existing.write_text("old")
+
+    organizer = DownloadsOrganizer(tmp_path)
+
+    organizer.organize()
+
+    assert existing.read_text() == "old"
+    assert (documents / "report (1).pdf").exists()
+
+
+def test_organize_multiple_files(tmp_path: Path) -> None:
+    (tmp_path / "report.pdf").write_text("pdf")
+    (tmp_path / "photo.jpg").write_text("jpg")
+    (tmp_path / "song.mp3").write_text("mp3")
+
+    organizer = DownloadsOrganizer(tmp_path)
+
+    organizer.organize()
+
+    assert (tmp_path / "Documents" / "report.pdf").exists()
+    assert (tmp_path / "Pictures" / "photo.jpg").exists()
+    assert (tmp_path / "Audio" / "song.mp3").exists()
