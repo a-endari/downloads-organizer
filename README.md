@@ -1,526 +1,216 @@
+<div align="center">
+
 # 📂 Downloads Organizer
 
-> A modern, cross-platform Python command-line application for safely cleaning up a cluttered Downloads folder.
+> **A lightweight, privacy-first Downloads folder organizer written in Python.**
 
-Downloads Organizer is a Python CLI application that automatically organizes downloaded files into sensible categories
-while preserving downloaded folders. Rather than acting as a general-purpose file manager, it focuses on solving one
-problem well: turning a messy Downloads folder into a clean, organized workspace.
+[![Python](https://img.shields.io/badge/Python-3.13+-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://python.org)
+[![License](https://img.shields.io/badge/License-MIT-blue.svg?style=for-the-badge)](LICENSE)
+[![Platform](https://img.shields.io/badge/Platform-macOS%20%7C%20Linux%20%7C%20Windows-lightgrey?style=for-the-badge)](#-quick-start)
+[![Privacy](https://img.shields.io/badge/Privacy-100%25%20Offline-success?style=for-the-badge)](#-why-no-ai)
 
-The project is also designed as a professional software engineering portfolio. Alongside practical functionality, it
-demonstrates modern Python development practices, clean architecture, maintainable code, thoughtful CLI design, and an
-incremental engineering workflow.
-
----
-
-## 🎯 Project Philosophy
-
-Downloads Organizer is intentionally opinionated.
-
-Instead of becoming another file manager with hundreds of options, the project focuses on one task:
-
-> **Clean up a cluttered Downloads folder safely, intelligently, and predictably.**
-
-Whenever a new feature is considered, the first question is:
-
-> **Does this directly improve the experience of organizing a Downloads folder?**
-
-If the answer is "not really," the feature probably doesn't belong in this project.
-
-This philosophy keeps the application focused, maintainable, and easy to understand.
+</div>
 
 ---
 
-## ✨ Current Features
+> [!IMPORTANT]
+> ### 🔮 The Ultimate Goal
+> **Eventually, this tool will opinionatedly clean up your Downloads folder completely automatically in the background—without you ever noticing *(or even having to permit it 😏)*.**  
+> *(Work in progress!)*
 
-### 📁 File Organization
+Let’s be honest: the Downloads folder is usually where files go to get forgotten. 
 
-- Organize both loose files and loose folders into categorized folders
-- Automatic file categorization based on file extension
-- Organize loose folders into the `Other Folders` category
-- Safely treats macOS package directories (`.app`, `.bundle`, `.framework`) as single files
-- Automatic creation of destination directories
-- Safe collision handling
-- Cross-platform filesystem support
+Every few weeks, I’d open mine, see hundreds of loose PDFs, screenshots, installer `.dmg`s, and random code snippets, tell myself *"I'll clean this up this weekend,"* and promptly close the window.
 
-### 📂 Built-in Categories
+Eventually, I got tired of doing archaeological digs just to find a receipt from last Tuesday. So I wrote **Downloads Organizer** to quietly handle it for me.
+
+* **No cloud services.**  
+* **No AI hype.**  
+* **No API keys or background telemetry.**  
+* **Just simple, deterministic Python.**
+
+---
+
+## ✨ Why I Built This
+
+There are plenty of file management scripts out there, but most of them either try to do way too much or force you to spend 20 minutes setting up complex rules.
+
+I wanted something simple with one clear goal:
+
+> **Keep my Downloads folder clean without getting in my way.**
+
+My long-term goal for this tool is lazy perfection: **install it once, forget it exists, and always have an organized folder when I open it.**
+
+---
+
+## 🎯 How I Designed It
+
+I built this around a few core principles I care about:
+
+- 🎯 **Single-minded** — It cleans `~/Downloads`. It won't touch the rest of your system.
+- ⚡ **Predictable** — A PDF goes to `Documents/` every single time. No surprises.
+- 🔒 **Private & Offline** — Everything stays on your machine. Zero network calls.
+- 🪶 **Zero Dependencies** — Runs entirely on Python's standard library. No massive third-party packages.
+- 🛡️ **Mac Package Safety** — Smart enough to treat macOS `.app`, `.bundle`, and `.framework` directories as single files and organize `.app` bundles cleanly into `Programs/`!
+- 🤫 **Quiet** — It does its job and gets out of your way.
+
+> [!NOTE]
+> **Mac Package Support**: macOS `.app`, `.bundle`, and `.framework` directories are recognized as single file units. `.app` bundles are categorized directly into `Programs/` without disassembling their internal contents.
+
+---
+
+## 🚫 Why Not AI?
+
+Lately, it feels like every CLI tool comes with a cloud API key or a local LLM attached to it. 
+
+I didn't want to wait 3 seconds for an LLM to decide if `tax_return_2024.pdf` belongs in a folder named `Documents`. 
+
+> [!TIP]
+> **Why Deterministic Rule-Based Sorting Wins:**
+> - ⚡ **Instant** — Runs in milliseconds.
+> - 🔒 **Private** — Your personal file names never leave your computer.
+> - 🔁 **Reliable** — It doesn't hallucinate or decide to rename your folders on a whim.
+> - 💰 **Free** — No API credits, no subscriptions.
+
+---
+
+## 📂 Built-in Categories
+
+Here's where your files automatically land:
 
 | Category | Folder Name | Common Extensions / Descriptions |
-| --- | --- | --- |
-| **Documents** | `Documents` | `.pdf`, `.docx`, `.xlsx`, `.pptx`, `.txt`, `.md`, `.csv`, `.pages` |
-| **Pictures** | `Pictures` | `.jpg`, `.jpeg`, `.png`, `.webp`, `.gif`, `.svg`, `.heic`, `.avif` |
-| **Audio** | `Audio` | `.mp3`, `.wav`, `.flac`, `.aac`, `.m4a`, `.ogg` |
-| **Video** | `Video` | `.mp4`, `.mkv`, `.mov`, `.webm`, `.avi`, `.m4v` |
-| **Code** | `Code` | `.py`, `.js`, `.ts`, `.html`, `.css`, `.json`, `.toml`, `.cpp`, `.rs` |
-| **Programs** | `Programs` | `.exe`, `.dmg`, `.pkg`, `.deb`, `.msi`, `.apk`, `.appimage` |
-| **Archives** | `Archives` | `.zip`, `.tar`, `.gz`, `.7z`, `.rar`, `.bz2`, `.iso` |
-| **Ebooks** | `Ebooks` | `.epub`, `.mobi`, `.azw`, `.azw3`, `.fb2` |
-| **Other Files** | `Other Files` | Files with unrecognized or rare extensions |
-| **Other Folders** | `Other Folders` | Loose directories (excluding macOS package bundles) |
-
-### 💻 Command Line Experience
-
-- Modern `argparse` interface
-- Helpful error messages
-- Case-insensitive category names
-- Filter organization by category
-- Implicit `stats` default command
-- Dry-run preview mode
-- Verbose output
-
-### 🛡 Safety
-
-- Preview operations before moving files
-- Strong typing throughout the application
-- Uses `pathlib` for safe filesystem operations
-- Designed around planning before execution
+| :--- | :--- | :--- |
+| 📄 **Documents** | `Documents` | `.pdf`, `.doc`, `.docx`, `.xlsx`, `.pptx`, `.txt`, `.md`, `.csv`, `.pages` |
+| 🖼️ **Pictures** | `Pictures` | `.jpg`, `.jpeg`, `.png`, `.webp`, `.gif`, `.svg`, `.heic`, `.avif` |
+| 🎵 **Audio** | `Audio` | `.mp3`, `.wav`, `.flac`, `.aac`, `.m4a`, `.ogg` |
+| 🎬 **Video** | `Video` | `.mp4`, `.mkv`, `.mov`, `.webm`, `.avi`, `.m4v` |
+| 💻 **Code** | `Code` | `.py`, `.js`, `.ts`, `.html`, `.css`, `.json`, `.toml`, `.cpp`, `.rs` |
+| ⚙️ **Programs** | `Programs` | `.exe`, `.dmg`, `.pkg`, `.deb`, `.app`, `.msi`, `.apk`, `.appimage` |
+| 📦 **Archives** | `Archives` | `.zip`, `.tar`, `.gz`, `.7z`, `.rar`, `.bz2`, `.iso` |
+| 📚 **Ebooks** | `Ebooks` | `.epub`, `.mobi`, `.azw`, `.azw3`, `.fb2` |
+| 📁 **Other Files** | `Other Files` | Files with unrecognized or rare extensions |
+| 📂 **Other Folders** | `Other Folders` | Loose directories (excluding macOS package bundles) |
 
 ---
 
-## 🚀 Installation
+## 📸 How It Looks in Action
 
-Clone the repository:
-
-```bash
-git clone https://github.com/a-endari/downloads-organizer.git
-cd downloads-organizer
-```
-
-Create and activate a virtual environment:
-
-### macOS / Linux
-
-```bash
-python -m venv .venv
-source .venv/bin/activate
-```
-
-### Windows
-
-```powershell
-python -m venv .venv
-.venv\Scripts\activate
-```
-
-Install the project in editable mode:
-
-```bash
-pip install -e .
-```
-
-After installation you can use either command:
-
-```bash
-downloads-organizer
-```
-
----
-
-## 🖥 Usage
-
-Show an overview of your Downloads folder.
-
-```bash
-downloads-organizer stats
-# or simply:
-downloads-organizer
-```
-
-Preview changes without moving any files:
-
-```bash
-downloads-organizer organize ~/Downloads --dry-run
-```
-
-Organize a Downloads folder:
-
-```bash
-downloads-organizer organize ~/Downloads
-```
-
-Organize only one category:
-
-```bash
-downloads-organizer organize ~/Downloads --only Documents
-```
-
-Enable verbose output:
-
-```bash
-downloads-organizer organize ~/Downloads --verbose
-```
-
-Category names are case-insensitive.
-
-The following commands are equivalent:
-
-```text
-Documents
-documents
-DOCUMENTS
-DoCuMeNtS
-```
-
----
-
-## 📸 Example
-
-Before:
+### Before
 
 ```text
 Downloads/
-├── report.pdf
-├── holiday.jpg
-├── setup.exe
-├── archive.zip
-├── script.py
-├── notes.epub
-└── IMG_847239.JPG
+├── quarterly_report.pdf
+├── photo.png
+├── installer.dmg
+├── test_script.py
+├── UnsortedFolder/
+└── Slack.app
 ```
 
-After:
+⬇️ **`downloads-organizer organize`**
+
+### After
 
 ```text
 Downloads/
 ├── Documents/
-│   └── report.pdf
+│   └── quarterly_report.pdf
 ├── Pictures/
-│   ├── holiday.jpg
-│   └── IMG_847239.JPG
+│   └── photo.png
 ├── Programs/
-│   └── setup.exe
-├── Archives/
-│   └── archive.zip
+│   ├── installer.dmg
+│   └── Slack.app              <-- Categorized as a Program!
 ├── Code/
-│   └── script.py
-└── Ebooks/
-    └── notes.epub
+│   └── test_script.py
+└── Other Folders/
+    └── UnsortedFolder/
 ```
 
 ---
 
-## 📁 Project Structure
+## 🚀 Quick Start
 
-```text
-downloads-organizer/
-├── src/
-│   └── downloads_organizer/
-│       ├── __init__.py
-│       ├── __main__.py
-│       ├── cli.py
-│       ├── config.py
-│       ├── constants.py
-│       ├── logger.py
-│       ├── main.py
-│       ├── models.py
-│       ├── organizer.py
-│       ├── rules.py
-│       ├── scheduler.py
-│       └── utils.py
-├── tests/
-├── pyproject.toml
-├── README.md
-├── LICENSE
-└── .gitignore
+```bash
+# 1. Clone the repo
+git clone https://github.com/a-endari/downloads-organizer.git
+cd downloads-organizer
+
+# 2. Install locally
+pip install -e .
+
+# 3. See what's sitting in your Downloads folder right now
+downloads-organizer
+
+# 4. Preview what will move without touching anything (Dry Run)
+downloads-organizer organize --dry-run
+
+# 5. Run the actual organization
+downloads-organizer organize
+
+# 6. Or just clean up one specific category
+downloads-organizer organize --only Documents
 ```
 
-As the project grows, new modules are introduced only when they have a clear responsibility. The codebase intentionally
-avoids creating files "just in case" they might be needed later.
-
 ---
 
-## 🏗 Architecture
+## ⚙️ Custom Configuration
 
-The application follows a layered architecture to separate responsibilities and keep the business logic independent from
-the command-line interface.
+It works out of the box with reasonable defaults. If you want custom rules, you can drop a simple `config.toml` into your system config directory:
 
-```text
-CLI
-│
-├── organizer.py
-├── models.py
-├── config.py
-└── pathlib/shutil
+| OS | Configuration File Path |
+| :--- | :--- |
+| **macOS** | `~/.config/downloads-organizer/config.toml` |
+| **Linux** | `~/.config/downloads-organizer/config.toml` |
+| **Windows** | `%APPDATA%\downloads-organizer\config.toml` |
+
+Example `config.toml`:
+
+```toml
+[ignore]
+# Files or directories you don't want moved
+files = [".DS_Store", "desktop.ini"]
+directories = ["In_Progress", "Keep_Here"]
 ```
 
-### Layer Responsibilities
+---
 
-| Layer                 | Responsibility                                                          |
-| --------------------- | ----------------------------------------------------------------------- |
-| **CLI**               | Parse command-line arguments, validate user input, and display results. |
-| **Application Layer** | Connect the command-line interface to the business logic.               |
-| **Business Logic**    | Scan files, categorize them, and perform organization.                  |
-| **Models**            | Represent application data using dataclasses and enums.                 |
-| **Filesystem**        | Interact safely with the operating system using `pathlib` and `shutil`. |
+## 🗺️ Roadmap
 
-One important design principle is that **business logic never prints directly to the terminal**. Instead, it returns
-structured data that any future interface (CLI, TUI, or GUI) can present.
+- [x] **Core Organization** — Fast file & folder categorization
+- [x] **Safe Preview** — Non-destructive `--dry-run` mode
+- [x] **Filtering** — Case-insensitive category filtering (`--only`)
+- [x] **Bundle Safety** — macOS `.app` bundle recognition & program categorization
+- [x] **Config System** — Custom TOML ignore lists for files & directories
+- [ ] **Auto-Scheduler** — Background organization daemon
+- [ ] **Duplicate Finder** — Detection & warning for duplicate downloads
+- [ ] **Interactive Mode** — Step-by-step `--interactive` prompts
 
 ---
 
-## 💡 Design Decisions
+<details>
+<summary>🛠️ <b>Under the Hood (For Fellow Nerds)</b> — <i>Click to expand</i></summary>
 
-This project intentionally emphasizes software engineering practices over simply producing a working script.
+<br>
 
-### Python Standard Library First
+Even though I made this lightweight for everyday use, I built it with strict engineering standards:
 
-Whenever practical, the project relies on Python's standard library instead of third-party packages.
+* **Layered Architecture**: Decoupled CLI input parsing from organization logic and system calls.
+* **Standard Library First**: Built with pure Python 3.13 (`pathlib`, `StrEnum`, `dataclasses`) with zero runtime dependencies.
+* **Fully Typed**: Annotated with type hints for cleaner IDE support and static analysis.
+* **Conventional Commits**: Clean Git history following standard commit conventions.
 
-This keeps the application lightweight while demonstrating a solid understanding of Python itself.
-
-External libraries will only be introduced when they provide significant value rather than replacing fundamental Python
-knowledge.
-
----
-
-### `pathlib`
-
-Filesystem operations are implemented using `pathlib` instead of `os.path`.
-
-Benefits include:
-
-- Object-oriented paths
-- Better readability
-- Cross-platform compatibility
-- Cleaner APIs for filesystem operations
-
----
-
-### `StrEnum`
-
-File categories are represented using Python's `StrEnum`.
-
-Compared to plain strings, this provides:
-
-- Type safety
-- Better IDE autocompletion
-- Easier refactoring
-- Centralized validation
-- Cleaner command-line parsing
-
----
-
-### Type Hints
-
-The project uses type hints throughout the codebase.
-
-This improves:
-
-- Readability
-- Static analysis
-- IDE support
-- Refactoring safety
-- Long-term maintainability
-
-Although Python remains dynamically typed, type hints significantly improve the development experience for larger
-projects.
-
----
-
-### Small, Incremental Commits
-
-Development follows a small-step workflow.
-
-Rather than implementing large features all at once, functionality is introduced through small, focused commits using
-the Conventional Commits specification.
-
-This produces a clean Git history that documents the evolution of the project.
-
----
-
-### Refactoring as a Feature
-
-The project treats refactoring as a normal part of development rather than something postponed until the end.
-
-Features that don't support the application's purpose are intentionally removed when a simpler design emerges.
-
-For example, recursive organization was deliberately abandoned after it became clear that it pushed the application
-toward becoming a general-purpose file manager instead of a focused Downloads cleanup tool.
-
----
-
-### Clean Architecture
-
-The project emphasizes separation of concerns.
-
-Examples include:
-
-- Separating command-line parsing from business logic.
-- Separating planning from execution.
-- Returning structured results instead of printing directly.
-- Keeping functions small and focused.
-- Giving each module a single responsibility.
-
-These decisions make the project easier to maintain, test, and extend in the future.
-
----
-
-## 🧠 Development Philosophy
-
-The primary objective is not simply to move files.
-
-The goal is to build software that demonstrates professional engineering practices while solving a real-world problem.
-
-Whenever possible, the project favors:
-
-- Simplicity over complexity
-- Readability over cleverness
-- Maintainability over premature optimization
-- Focus over feature creep
-
-Every architectural decision is evaluated by asking:
-
-> **Does this make the application easier to understand, maintain, and extend?**
-
-If not, the simpler solution is usually preferred.
-
----
-
-## 🗺 Roadmap
-
-Downloads Organizer is being developed incrementally, with each milestone introducing new concepts while maintaining a clean, stable codebase.
-
-### ✅ Completed
-
-- Project structure using the `src` layout
-- Modern packaging with `pyproject.toml`
-- Command-line interface using `argparse`
-- Automatic file categorization
-- Safe file organization
-- Dry-run mode
-- Category filtering
-- Verbose output
-- `StrEnum`-based categories
-- Modern `pathlib` filesystem operations
-- Configuration system
-
----
-
-### 🚧 In Progress
-
-- Ignore patterns
-- Improved collision handling
-
----
-
-### 🔮 Planned Features
-
-#### Downloads Health Check
-
-Analyze a Downloads folder before organizing it.
-
-Planned checks include:
-
-- Empty directories
-- Missing file extensions
-- Poorly named files
-- Duplicate files (name + size)
-- Duplicate files (hash comparison)
-
-Rather than immediately moving files, the application will present recommendations and ask for confirmation before
-making changes.
-
----
-
-#### Interactive Workflow
-
-- Yes / No prompts
-- Yes to All
-- Skip All
-- `--accept-all-changes`
-- `--no-changes`
-
-This allows both interactive and fully automated workflows.
-
----
-
-#### Configuration
-
-- TOML configuration files
-- Custom categories
-- Ignore patterns
-- User preferences
-
----
-
-#### User Experience
-
-- Rich terminal output
-- Textual TUI
-- Better summaries
-- Improved error messages
-
----
-
-#### Quality
-
-- Unit tests
-- Integration tests
-- GitHub Actions
-- Continuous Integration
-- Automated releases
-
----
-
-## 🤝 Contributing
-
-Although this project is primarily a personal portfolio and learning project, suggestions, bug reports, and constructive feedback are always welcome.
-
----
-
-## 📋 Requirements
-
-- Python **3.13** or newer
-- macOS, Linux, or Windows
-- No required third-party runtime dependencies
-
-Development tools currently include:
-
-- Ruff
-- Git
-- GitHub
-
-Additional development tools such as `pytest` and GitHub Actions will be introduced as the project evolves.
-
----
-
-## 📚 What This Project Demonstrates
-
-This project showcases practical software engineering skills including:
-
-- Modern Python
-- Clean Architecture
-- Command-line application development
-- Filesystem programming
-- Object-oriented design
-- Type hints
-- Enumerations
-- Dataclasses
-- Packaging
-- Professional Git workflow
-- Documentation
-- Incremental software design
-
-The emphasis is not simply on writing code that works, but on building software that remains maintainable,
-understandable, and enjoyable to extend.
+</details>
 
 ---
 
 ## 📄 License
 
-This project is licensed under the MIT License.
-
-See the [LICENSE](LICENSE) file for details.
+Licensed under the **MIT License**. Feel free to use it, fork it, or adapt it however you like.
 
 ---
 
-## ⭐ Final Notes
+## ⭐ Wrapping Up
 
-Downloads Organizer is intentionally being built as both a useful utility and a demonstration of professional Python
-development practices.
+I wrote this utility because I believe the best software is the software you don't have to think about. 
 
-Rather than adding every possible feature, the project focuses on solving one problem well while continuously improving
-its architecture, code quality, and user experience.
-
-If you find the project useful or interesting, consider giving it a ⭐ on GitHub.
-
-Feedback, ideas, and constructive criticism are always appreciated.
+If this saves you a bit of manual file dragging or keeps your workspace feeling clean, drop a ⭐ on GitHub—it's always appreciated!
