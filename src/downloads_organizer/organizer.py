@@ -6,8 +6,6 @@ from .config import Config, load_config
 from .models import Category, MoveResult, ScanResult
 from .rules import PACKAGE_EXTENSIONS, FileCategorizer
 
-# from downloads_organizer.config import Config
-
 
 class DownloadsOrganizer:
     """Scan directories and determine where files belong."""

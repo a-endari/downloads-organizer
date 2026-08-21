@@ -1,3 +1,5 @@
+import os
+import sys
 from dataclasses import dataclass, field
 from pathlib import Path
 
@@ -5,6 +7,20 @@ import tomllib
 
 from .constants import DEFAULT_DOWNLOADS_DIR, DEFAULT_IGNORED_FILES
 from .models import Category
+
+
+def default_config_path() -> Path:
+    """Return the OS-appropriate default config file location."""
+    app_name = "downloads-organizer"
+
+    if sys.platform == "win32":
+        base = os.environ.get("APPDATA")
+        base_dir = Path(base) if base else Path.home() / "AppData" / "Roaming"
+    else:
+        base = os.environ.get("XDG_CONFIG_HOME")
+        base_dir = Path(base) if base else Path.home() / ".config"
+
+    return base_dir / app_name / "config.toml"
 
 
 def _load_categories(data: dict) -> dict[Category, str]:
@@ -75,7 +91,7 @@ class Config:
 
     downloads_directory: Path = DEFAULT_DOWNLOADS_DIR
     categories: dict[Category, str] = field(
-        default_factory=lambda: {category.value for category in Category},
+        default_factory=lambda: {category: category.value for category in Category},
     )
     rules: RulesConfig = field(default_factory=RulesConfig)
 
@@ -89,9 +105,14 @@ def load_config(path: Path | None = None) -> Config:
     """Load configuration from TOML, falling back to application defaults."""
 
     if path is None:
+        path = default_config_path()
+
+    path = path.expanduser()
+
+    if not path.exists():
         return Config()
 
-    with path.expanduser().open("rb") as config_file:
+    with path.open("rb") as config_file:
         data = tomllib.load(config_file)
 
     general = data.get("general", {})
