@@ -85,3 +85,5 @@ config/local_rules.json
 # My test folder
 test/
 
+# My custom rules for flake8 (line lenght limit 120)
+.flake8

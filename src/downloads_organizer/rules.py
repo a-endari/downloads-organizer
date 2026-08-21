@@ -7,18 +7,18 @@ from .models import Category
 
 
 def _build_default_rules(
-    category_extensions: dict[Category, set[str]],
-) -> dict[str, Category]:
+    category_extensions: dict[str, set[str]],
+) -> dict[str, str]:
     """Flatten category->extensions into extension->category, erroring on overlap."""
-    rules: dict[str, Category] = {}
-    for category, extensions in category_extensions.items():
+    rules: dict[str, str] = {}
+    for category_key, extensions in category_extensions.items():
         for extension in extensions:
             if extension in rules:
                 raise ValueError(
                     f"Extension '{extension}' is assigned to both "
-                    f"{rules[extension].value!r} and {category.value!r}."
+                    f"{rules[extension]!r} and {category_key!r}."
                 )
-            rules[extension] = category
+            rules[extension] = category_key
     return rules
 
 
@@ -173,11 +173,11 @@ class FileCategorizer:
             extension.lower(): category for extension, category in self.rules.extensions.items()
         }
 
-        self._compile_regex = [
+        self._compiled_regex: list[tuple[re.Pattern[str], str]] = [
             (re.compile(pattern), category) for pattern, category in self.rules.regex.items()
         ]
 
-    def get_category(self, file_path: Path) -> Category:
+    def get_category(self, file_path: Path) -> str:
         """
         Return the destination category for a file.
 
@@ -190,7 +190,7 @@ class FileCategorizer:
         if name in self.rules.filenames:
             return self.rules.filenames[name]
 
-        for regex, category in self._compile_regex:
+        for regex, category in self._compiled_regex:
             if regex.search(name):
                 return category
 
@@ -199,7 +199,10 @@ class FileCategorizer:
                 return category
 
         extension = file_path.suffix.lower()
-        return self.extensions.get(extension, Category.OTHER)
+        category = self.extensions.get(extension, Category.OTHER)
+        if isinstance(category, Category):
+            return category.key
+        return category
 
 
 # Directory types that should be treated as files.

@@ -26,6 +26,8 @@ class DownloadsOrganizer:
 
     def _iter_folders(self) -> Iterator[Path]:
         """Yield directories that should be moved."""
+        known_folder_names = set(self.config.categories.values())
+
         for item in self.source_directory.iterdir():
             if not item.is_dir():
                 continue
@@ -36,7 +38,7 @@ class DownloadsOrganizer:
             if item.name in self.config.ignored_directories:
                 continue
 
-            if item.name in Category.directory_names():
+            if item.name in known_folder_names:
                 continue
 
             yield item
@@ -76,9 +78,11 @@ class DownloadsOrganizer:
             )
         return results
 
-    def _get_category_directory(self, category: Category) -> Path:
-        """Return the directory for a category."""
-        return self.source_directory / category
+    def _get_category_directory(self, category: str) -> Path:
+        """Return the directory for a category key."""
+
+        folder_name = self.config.categories.get(category, category)
+        return self.source_directory / folder_name
 
     @staticmethod
     def _ensure_directory(directory: Path) -> None:
@@ -108,8 +112,15 @@ class DownloadsOrganizer:
     def plan_moves(
         self,
         *,
-        only: Category | None = None,
+        only: str | None = None,
     ) -> list[MoveResult]:
+        """
+        Work out where each file and folder would end up, without moving anything.
+
+        Useful for previewing a run (e.g. a --dry-run flag) before committing
+        to it. Pass `only` to preview a single category in isolation.
+        """
+
         results = self.scan()
 
         move_results: list[MoveResult] = []
@@ -129,7 +140,15 @@ class DownloadsOrganizer:
 
         return move_results
 
-    def organize(self, only: Category | None = None) -> list[MoveResult]:
+    def organize(self, only: str | None = None) -> list[MoveResult]:
+        """
+        Move files and folders into their category directories.
+
+        Plans the moves the same way plan_moves() does, then actually performs
+        them on disk, creating destination folders as needed. Pass `only` to
+        organize a single category and leave everything else untouched.
+        """
+
         move_results = self.plan_moves(only=only)
 
         for move in move_results:

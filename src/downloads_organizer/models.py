@@ -4,7 +4,7 @@ from pathlib import Path
 
 
 class Category(StrEnum):
-    """Supported file categories."""
+    """Built-in file categories. User config can define additional ones."""
 
     DOCUMENT = "Documents"
     PICTURE = "Pictures"
@@ -25,29 +25,13 @@ class Category(StrEnum):
     @classmethod
     def values(cls) -> list[str]:
         """Return the display names of all categories."""
-
         return list(cls)
 
     @classmethod
-    def from_string(cls, value: str) -> "Category":
-        """Return the matching category from a user-provided string."""
+    def default_categories(cls) -> dict[str, str]:
+        """Return the built-in key -> folder name mapping."""
 
-        normalized = value.strip().casefold()
-
-        for category in cls:
-            if category.value.casefold() == normalized:
-                return category
-
-        available = ", ".join(cls.values())
-
-        raise ValueError(
-            f"Unknown category '{value}'. Available categories: {available}",
-        )
-
-    @classmethod
-    def directory_names(cls) -> set[str]:
-        """Return the directory names used by category folders."""
-        return {category.value for category in cls}
+        return {category.key: category.value for category in cls}
 
 
 @dataclass(slots=True, frozen=True)
@@ -55,11 +39,13 @@ class ScanResult:
     """Represents a scanned file and its destination category."""
 
     source: Path
-    category: Category
+    category: str
 
 
 @dataclass(slots=True)
 class MoveResult:
+    """Represents a planned or completed move of a source file to its destination."""
+
     source: Path
     destination: Path
-    category: Category
+    category: str

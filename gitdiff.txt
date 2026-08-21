@@ -1,0 +1,393 @@
+diff --git a/.gitignore b/.gitignore
+index 4c840fb..2930898 100644
+--- a/.gitignore
++++ b/.gitignore
+@@ -85,3 +85,5 @@ config/local_rules.json
+ # My test folder
+ test/
+ 
++# My custom rules for flake8 (line lenght limit 120)
++.flake8
+\ No newline at end of file
+diff --git a/src/downloads_organizer/config.py b/src/downloads_organizer/config.py
+index 4a890d5..64e0b72 100644
+--- a/src/downloads_organizer/config.py
++++ b/src/downloads_organizer/config.py
+@@ -23,31 +23,47 @@ def default_config_path() -> Path:
+     return base_dir / app_name / "config.toml"
+ 
+ 
+-def _load_categories(data: dict) -> dict[Category, str]:
+-    """Load configured category destination folder names."""
++def _load_categories(data: dict) -> dict[str, str]:
++    """
++    Load category key -> folder name mappings.
++
++    Starts from the built-in categories, then merges in (and allows adding
++    to, or overriding folder names for) any [categories.<key>] the user
++    defines in TOML.
++    """
++    categories: dict[str, str] = Category.default_categories()
+     categories_data = data.get("categories", {})
+ 
+-    categories: dict[Category, str] = {}
+-
+-    for category in Category:
+-        category_data = categories_data.get(category.key, {})
+-        folder = category_data.get("folder", category.value)
+-        categories[category] = folder
++    for key, category_data in categories_data.items():
++        folder = category_data.get("folder")
++        if folder is None:
++            continue
++        categories[key] = folder
+ 
+     return categories
+ 
+ 
+-def _parse_config_category(value: str) -> Category:
+-    """Convert a TOML category name into a Category enum."""
++def _parse_config_category(value: str, known_categories: dict[str, str]) -> str:
++    """
++    Resolve a TOML rule's category name into a category key.
++
++    Accepts either a category key (e.g. "games") or a built-in display
++    name (e.g. "Documents"), for convenience. Raises if the category was
++    never declared in [categories] or among the built-ins.
++    """
+     normalized = value.strip().casefold()
+ 
+-    for category in Category:
+-        if category.key == normalized:
+-            return category
++    if normalized in known_categories:
++        return normalized
+ 
+-    available = ", ".join(category.key for category in Category)
++    for key, folder in known_categories.items():
++        if folder.casefold() == normalized:
++            return key
++
++    available = ", ".join(known_categories)
+     raise ValueError(
+-        f"Invalid category '{value}' in configuration. Expected one of: {available}.",
++        f"Unknown category '{value}' in configuration. "
++        f"Define it under [categories.{normalized}] first, or use one of: {available}.",
+     )
+ 
+ 
+@@ -55,31 +71,31 @@ def _parse_config_category(value: str) -> Category:
+ class RulesConfig:
+     "User-configurable rules for classifying downloaded items."
+ 
+-    extensions: dict[str, Category] = field(default_factory=dict)
+-    filenames: dict[str, Category] = field(default_factory=dict)
+-    patterns: dict[str, Category] = field(default_factory=dict)
+-    regex: dict[str, Category] = field(default_factory=dict)
++    extensions: dict[str, str] = field(default_factory=dict)
++    filenames: dict[str, str] = field(default_factory=dict)
++    patterns: dict[str, str] = field(default_factory=dict)
++    regex: dict[str, str] = field(default_factory=dict)
+ 
+ 
+-def _load_rules(data: dict) -> RulesConfig:
++def _load_rules(data: dict, known_categories: dict[str, str]) -> RulesConfig:
+     """Load user-defined classification rules."""
+     rules_data = data.get("rules", {})
+ 
+     return RulesConfig(
+         extensions={
+-            extension.lower(): _parse_config_category(category)
++            extension.lower(): _parse_config_category(category, known_categories)
+             for extension, category in rules_data.get("extensions", {}).items()
+         },
+         filenames={
+-            filename: _parse_config_category(category)
++            filename: _parse_config_category(category, known_categories)
+             for filename, category in rules_data.get("filenames", {}).items()
+         },
+         patterns={
+-            pattern: _parse_config_category(category)
++            pattern: _parse_config_category(category, known_categories)
+             for pattern, category in rules_data.get("patterns", {}).items()
+         },
+         regex={
+-            pattern: _parse_config_category(category)
++            pattern: _parse_config_category(category, known_categories)
+             for pattern, category in rules_data.get("regex", {}).items()
+         },
+     )
+@@ -90,9 +106,7 @@ class Config:
+     """Resolved application configuration."""
+ 
+     downloads_directory: Path = DEFAULT_DOWNLOADS_DIR
+-    categories: dict[Category, str] = field(
+-        default_factory=lambda: {category: category.value for category in Category},
+-    )
++    categories: dict[str, str] = field(default_factory=Category.default_categories)
+     rules: RulesConfig = field(default_factory=RulesConfig)
+ 
+     ignored_files: set[str] = field(
+@@ -118,11 +132,11 @@ def load_config(path: Path | None = None) -> Config:
+     general = data.get("general", {})
+ 
+     downloads_directory = Path(
+-        general.get("downloads_directory", str(DEFAULT_DOWNLOADS_DIR)),
++        general.get("downloads_directory", DEFAULT_DOWNLOADS_DIR),
+     ).expanduser()
+ 
+     categories = _load_categories(data)
+-    rules = _load_rules(data)
++    rules = _load_rules(data, categories)
+ 
+     ignore = data.get("ignore", {})
+ 
+diff --git a/src/downloads_organizer/models.py b/src/downloads_organizer/models.py
+index 20f5a2e..bfa34c7 100644
+--- a/src/downloads_organizer/models.py
++++ b/src/downloads_organizer/models.py
+@@ -4,7 +4,7 @@ from pathlib import Path
+ 
+ 
+ class Category(StrEnum):
+-    """Supported file categories."""
++    """Built-in file categories. User config can define additional ones."""
+ 
+     DOCUMENT = "Documents"
+     PICTURE = "Pictures"
+@@ -25,29 +25,13 @@ class Category(StrEnum):
+     @classmethod
+     def values(cls) -> list[str]:
+         """Return the display names of all categories."""
+-
+         return list(cls)
+ 
+     @classmethod
+-    def from_string(cls, value: str) -> "Category":
+-        """Return the matching category from a user-provided string."""
+-
+-        normalized = value.strip().casefold()
++    def default_categories(cls) -> dict[str, str]:
++        """Return the built-in key -> folder name mapping."""
+ 
+-        for category in cls:
+-            if category.value.casefold() == normalized:
+-                return category
+-
+-        available = ", ".join(cls.values())
+-
+-        raise ValueError(
+-            f"Unknown category '{value}'. Available categories: {available}",
+-        )
+-
+-    @classmethod
+-    def directory_names(cls) -> set[str]:
+-        """Return the directory names used by category folders."""
+-        return {category.value for category in cls}
++        return {category.key: category.value for category in cls}
+ 
+ 
+ @dataclass(slots=True, frozen=True)
+@@ -55,11 +39,13 @@ class ScanResult:
+     """Represents a scanned file and its destination category."""
+ 
+     source: Path
+-    category: Category
++    category: str
+ 
+ 
+ @dataclass(slots=True)
+ class MoveResult:
++    """Represents a planned or completed move of a source file to its destination."""
++
+     source: Path
+     destination: Path
+-    category: Category
++    category: str
+diff --git a/src/downloads_organizer/organizer.py b/src/downloads_organizer/organizer.py
+index ea545dc..42af701 100644
+--- a/src/downloads_organizer/organizer.py
++++ b/src/downloads_organizer/organizer.py
+@@ -26,6 +26,8 @@ class DownloadsOrganizer:
+ 
+     def _iter_folders(self) -> Iterator[Path]:
+         """Yield directories that should be moved."""
++        known_folder_names = set(self.config.categories.values())
++
+         for item in self.source_directory.iterdir():
+             if not item.is_dir():
+                 continue
+@@ -36,7 +38,7 @@ class DownloadsOrganizer:
+             if item.name in self.config.ignored_directories:
+                 continue
+ 
+-            if item.name in Category.directory_names():
++            if item.name in known_folder_names:
+                 continue
+ 
+             yield item
+@@ -76,9 +78,11 @@ class DownloadsOrganizer:
+             )
+         return results
+ 
+-    def _get_category_directory(self, category: Category) -> Path:
+-        """Return the directory for a category."""
+-        return self.source_directory / category
++    def _get_category_directory(self, category: str) -> Path:
++        """Return the directory for a category key."""
++
++        folder_name = self.config.categories.get(category, category)
++        return self.source_directory / folder_name
+ 
+     @staticmethod
+     def _ensure_directory(directory: Path) -> None:
+@@ -108,8 +112,15 @@ class DownloadsOrganizer:
+     def plan_moves(
+         self,
+         *,
+-        only: Category | None = None,
++        only: str | None = None,
+     ) -> list[MoveResult]:
++        """
++        Work out where each file and folder would end up, without moving anything.
++
++        Useful for previewing a run (e.g. a --dry-run flag) before committing
++        to it. Pass `only` to preview a single category in isolation.
++        """
++
+         results = self.scan()
+ 
+         move_results: list[MoveResult] = []
+@@ -129,7 +140,15 @@ class DownloadsOrganizer:
+ 
+         return move_results
+ 
+-    def organize(self, only: Category | None = None) -> list[MoveResult]:
++    def organize(self, only: str | None = None) -> list[MoveResult]:
++        """
++        Move files and folders into their category directories.
++
++        Plans the moves the same way plan_moves() does, then actually performs
++        them on disk, creating destination folders as needed. Pass `only` to
++        organize a single category and leave everything else untouched.
++        """
++
+         move_results = self.plan_moves(only=only)
+ 
+         for move in move_results:
+diff --git a/src/downloads_organizer/rules.py b/src/downloads_organizer/rules.py
+index 0376994..10dc6bd 100644
+--- a/src/downloads_organizer/rules.py
++++ b/src/downloads_organizer/rules.py
+@@ -7,18 +7,18 @@ from .models import Category
+ 
+ 
+ def _build_default_rules(
+-    category_extensions: dict[Category, set[str]],
+-) -> dict[str, Category]:
++    category_extensions: dict[str, set[str]],
++) -> dict[str, str]:
+     """Flatten category->extensions into extension->category, erroring on overlap."""
+-    rules: dict[str, Category] = {}
+-    for category, extensions in category_extensions.items():
++    rules: dict[str, str] = {}
++    for category_key, extensions in category_extensions.items():
+         for extension in extensions:
+             if extension in rules:
+                 raise ValueError(
+                     f"Extension '{extension}' is assigned to both "
+-                    f"{rules[extension].value!r} and {category.value!r}."
++                    f"{rules[extension]!r} and {category_key!r}."
+                 )
+-            rules[extension] = category
++            rules[extension] = category_key
+     return rules
+ 
+ 
+@@ -170,14 +170,16 @@ class FileCategorizer:
+         self.rules = RulesConfig() if rules is None else rules
+ 
+         self.extensions = self.DEFAULT_RULES | {
+-            extension.lower(): category for extension, category in self.rules.extensions.items()
++            extension.lower(): category
++            for extension, category in self.rules.extensions.items()
+         }
+ 
+-        self._compile_regex = [
+-            (re.compile(pattern), category) for pattern, category in self.rules.regex.items()
++        self._compiled_regex: list[tuple[re.Pattern[str], str]] = [
++            (re.compile(pattern), category)
++            for pattern, category in self.rules.regex.items()
+         ]
+ 
+-    def get_category(self, file_path: Path) -> Category:
++    def get_category(self, file_path: Path) -> str:
+         """
+         Return the destination category for a file.
+ 
+@@ -190,7 +192,7 @@ class FileCategorizer:
+         if name in self.rules.filenames:
+             return self.rules.filenames[name]
+ 
+-        for regex, category in self._compile_regex:
++        for regex, category in self._compiled_regex:
+             if regex.search(name):
+                 return category
+ 
+@@ -199,7 +201,10 @@ class FileCategorizer:
+                 return category
+ 
+         extension = file_path.suffix.lower()
+-        return self.extensions.get(extension, Category.OTHER)
++        category = self.extensions.get(extension, Category.OTHER)
++        if isinstance(category, Category):
++            return category.key
++        return category
+ 
+ 
+ # Directory types that should be treated as files.
+diff --git a/tests/test_rules.py b/tests/test_rules.py
+index d5cf425..783f879 100644
+--- a/tests/test_rules.py
++++ b/tests/test_rules.py
+@@ -13,28 +13,28 @@ def categorizer() -> FileCategorizer:
+ @pytest.mark.parametrize(
+     ("filename", "expected_category"),
+     [
+-        ("report.pdf", Category.DOCUMENT),
+-        ("photo.jpg", Category.PICTURE),
+-        ("photo.JFIF", Category.PICTURE),
+-        ("song.mp3", Category.AUDIO),
+-        ("video.mp4", Category.VIDEO),
+-        ("script.py", Category.CODE),
+-        ("archiev.zip", Category.ARCHIVE),
+-        ("book.epub", Category.EBOOK),
+-        ("unknown.xyz", Category.OTHER),
++        ("report.pdf", Category.DOCUMENT.key),
++        ("photo.jpg", Category.PICTURE.key),
++        ("photo.JFIF", Category.PICTURE.key),
++        ("song.mp3", Category.AUDIO.key),
++        ("video.mp4", Category.VIDEO.key),
++        ("script.py", Category.CODE.key),
++        ("archiev.zip", Category.ARCHIVE.key),
++        ("book.epub", Category.EBOOK.key),
++        ("unknown.xyz", Category.OTHER.key),
+     ],
+ )
+ def test_categorize_extension(
+     categorizer: FileCategorizer,
+     filename: str,
+-    expected_category: Category,
++    expected_category: str,
+ ) -> None:
+     assert categorizer.get_category(Path(filename)) == expected_category
+ 
+ 
+ def test_categorize_without_extension(categorizer: FileCategorizer) -> None:
+-    assert categorizer.get_category(Path("README")) == Category.OTHER
++    assert categorizer.get_category(Path("README")) == Category.OTHER.key
+ 
+ 
+ def test_categorize_is_case_insensitive(categorizer: FileCategorizer) -> None:
+-    assert categorizer.get_category(Path("REPORT.PDF")) == Category.DOCUMENT
++    assert categorizer.get_category(Path("REPORT.PDF")) == Category.DOCUMENT.key

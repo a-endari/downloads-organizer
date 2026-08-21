@@ -23,31 +23,47 @@ def default_config_path() -> Path:
     return base_dir / app_name / "config.toml"
 
 
-def _load_categories(data: dict) -> dict[Category, str]:
-    """Load configured category destination folder names."""
+def _load_categories(data: dict) -> dict[str, str]:
+    """
+    Load category key -> folder name mappings.
+
+    Starts from the built-in categories, then merges in (and allows adding
+    to, or overriding folder names for) any [categories.<key>] the user
+    defines in TOML.
+    """
+    categories: dict[str, str] = Category.default_categories()
     categories_data = data.get("categories", {})
 
-    categories: dict[Category, str] = {}
-
-    for category in Category:
-        category_data = categories_data.get(category.key, {})
-        folder = category_data.get("folder", category.value)
-        categories[category] = folder
+    for key, category_data in categories_data.items():
+        folder = category_data.get("folder")
+        if folder is None:
+            continue
+        categories[key] = folder
 
     return categories
 
 
-def _parse_config_category(value: str) -> Category:
-    """Convert a TOML category name into a Category enum."""
+def _parse_config_category(value: str, known_categories: dict[str, str]) -> str:
+    """
+    Resolve a TOML rule's category name into a category key.
+
+    Accepts either a category key (e.g. "games") or a built-in display
+    name (e.g. "Documents"), for convenience. Raises if the category was
+    never declared in [categories] or among the built-ins.
+    """
     normalized = value.strip().casefold()
 
-    for category in Category:
-        if category.key == normalized:
-            return category
+    if normalized in known_categories:
+        return normalized
 
-    available = ", ".join(category.key for category in Category)
+    for key, folder in known_categories.items():
+        if folder.casefold() == normalized:
+            return key
+
+    available = ", ".join(known_categories)
     raise ValueError(
-        f"Invalid category '{value}' in configuration. Expected one of: {available}.",
+        f"Unknown category '{value}' in configuration. "
+        f"Define it under [categories.{normalized}] first, or use one of: {available}.",
     )
 
 
@@ -55,31 +71,31 @@ def _parse_config_category(value: str) -> Category:
 class RulesConfig:
     "User-configurable rules for classifying downloaded items."
 
-    extensions: dict[str, Category] = field(default_factory=dict)
-    filenames: dict[str, Category] = field(default_factory=dict)
-    patterns: dict[str, Category] = field(default_factory=dict)
-    regex: dict[str, Category] = field(default_factory=dict)
+    extensions: dict[str, str] = field(default_factory=dict)
+    filenames: dict[str, str] = field(default_factory=dict)
+    patterns: dict[str, str] = field(default_factory=dict)
+    regex: dict[str, str] = field(default_factory=dict)
 
 
-def _load_rules(data: dict) -> RulesConfig:
+def _load_rules(data: dict, known_categories: dict[str, str]) -> RulesConfig:
     """Load user-defined classification rules."""
     rules_data = data.get("rules", {})
 
     return RulesConfig(
         extensions={
-            extension.lower(): _parse_config_category(category)
+            extension.lower(): _parse_config_category(category, known_categories)
             for extension, category in rules_data.get("extensions", {}).items()
         },
         filenames={
-            filename: _parse_config_category(category)
+            filename: _parse_config_category(category, known_categories)
             for filename, category in rules_data.get("filenames", {}).items()
         },
         patterns={
-            pattern: _parse_config_category(category)
+            pattern: _parse_config_category(category, known_categories)
             for pattern, category in rules_data.get("patterns", {}).items()
         },
         regex={
-            pattern: _parse_config_category(category)
+            pattern: _parse_config_category(category, known_categories)
             for pattern, category in rules_data.get("regex", {}).items()
         },
     )
@@ -90,9 +106,7 @@ class Config:
     """Resolved application configuration."""
 
     downloads_directory: Path = DEFAULT_DOWNLOADS_DIR
-    categories: dict[Category, str] = field(
-        default_factory=lambda: {category: category.value for category in Category},
-    )
+    categories: dict[str, str] = field(default_factory=Category.default_categories)
     rules: RulesConfig = field(default_factory=RulesConfig)
 
     ignored_files: set[str] = field(
@@ -118,11 +132,11 @@ def load_config(path: Path | None = None) -> Config:
     general = data.get("general", {})
 
     downloads_directory = Path(
-        general.get("downloads_directory", str(DEFAULT_DOWNLOADS_DIR)),
+        general.get("downloads_directory", DEFAULT_DOWNLOADS_DIR),
     ).expanduser()
 
     categories = _load_categories(data)
-    rules = _load_rules(data)
+    rules = _load_rules(data, categories)
 
     ignore = data.get("ignore", {})
 
