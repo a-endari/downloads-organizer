@@ -180,4 +180,4 @@ def test_organize_multiple_files(tmp_path: Path) -> None:
 
     assert (tmp_path / "Documents" / "report.pdf").exists()
     assert (tmp_path / "Pictures" / "photo.jpg").exists()
-    assert (tmp_path / "Audio" / "song.mp3").exists()
+    assert (tmp_path / "Music" / "song.mp3").exists()

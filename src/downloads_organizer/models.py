@@ -8,7 +8,7 @@ class Category(StrEnum):
 
     DOCUMENT = "Documents"
     PICTURE = "Pictures"
-    AUDIO = "Audio"
+    AUDIO = "Music"
     VIDEO = "Video"
     CODE = "Code"
     PROGRAM = "Programs"
@@ -16,6 +16,11 @@ class Category(StrEnum):
     EBOOK = "Ebooks"
     OTHER = "Other Files"
     OTHER_FOLDERS = "Other Folders"
+
+    @property
+    def key(self) -> str:
+        """Return the stable configuration key for this category."""
+        return self.name.lower()
 
     @classmethod
     def values(cls) -> list[str]:

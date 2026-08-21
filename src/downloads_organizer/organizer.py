@@ -2,10 +2,11 @@ import shutil
 from collections.abc import Iterator
 from pathlib import Path
 
-from downloads_organizer.config import Config
-
+from .config import Config, load_config
 from .models import Category, MoveResult, ScanResult
 from .rules import PACKAGE_EXTENSIONS, FileCategorizer
+
+# from downloads_organizer.config import Config
 
 
 class DownloadsOrganizer:
@@ -17,8 +18,8 @@ class DownloadsOrganizer:
         config: Config | None = None,
     ) -> None:
         self.source_directory = source_directory
-        self.config = config or Config()
-        self.categorizer = FileCategorizer()
+        self.config = config or load_config()
+        self.categorizer = FileCategorizer(self.config.rules)
 
     @staticmethod
     def _is_package(path: Path) -> bool:

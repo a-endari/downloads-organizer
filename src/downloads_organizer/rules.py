@@ -1,5 +1,8 @@
+import re
+from fnmatch import fnmatch
 from pathlib import Path
 
+from .config import RulesConfig
 from .models import Category
 
 
@@ -163,17 +166,40 @@ class FileCategorizer:
 
     DEFAULT_RULES = _build_default_rules(CATEGORY_EXTENSIONS)
 
-    def __init__(self, rules: dict[str, Category] | None = None) -> None:
-        self.rules = rules or self.DEFAULT_RULES
+    def __init__(self, rules: RulesConfig | None = None) -> None:
+        self.rules = RulesConfig() if rules is None else rules
+
+        self.extensions = self.DEFAULT_RULES | {
+            extension.lower(): category for extension, category in self.rules.extensions.items()
+        }
+
+        self._compile_regex = [
+            (re.compile(pattern), category) for pattern, category in self.rules.regex.items()
+        ]
 
     def get_category(self, file_path: Path) -> Category:
         """
         Return the destination category for a file.
 
-        Unknown extensions are placed in 'Other'.
+        Rules are checked in order of specificity: exact filename match,
+        regex match, glob pattern match, extension match, falling back to
+        Category.OTHER when nothing matches.
         """
+        name = file_path.name
+
+        if name in self.rules.filenames:
+            return self.rules.filenames[name]
+
+        for regex, category in self._compile_regex:
+            if regex.search(name):
+                return category
+
+        for pattern, category in self.rules.patterns.items():
+            if fnmatch(name, pattern):
+                return category
+
         extension = file_path.suffix.lower()
-        return self.rules.get(extension, Category.OTHER)
+        return self.extensions.get(extension, Category.OTHER)
 
 
 # Directory types that should be treated as files.
