@@ -1,0 +1,428 @@
+# Downloads Organizer configuration
+#
+# This file is a template provided by Downloads Organizer.
+#
+# The application uses built-in defaults even when no configuration file
+# exists. You normally do NOT need to edit every setting here.
+#
+# To create your personal configuration:
+#
+#     downloads-organizer config --init
+#
+# Your personal configuration is stored in the operating system's
+# configuration directory, for example:
+#
+#     macOS / Linux:
+#         ~/.config/downloads-organizer/config.toml
+#
+#     Windows:
+#         %APPDATA%\downloads-organizer\config.toml
+#
+# To open your configuration in an editor:
+#
+#     downloads-organizer config --edit
+#
+# Changes take effect the next time Downloads Organizer runs.
+#
+# ---------------------------------------------------------------------------
+# IMPORTANT
+# ---------------------------------------------------------------------------
+#
+# Configuration values are merged with the application's built-in defaults.
+#
+# You can therefore:
+#
+#   - change an existing category folder
+#   - add your own categories
+#   - add classification rules
+#   - override built-in extension rules
+#   - add filename rules
+#   - add glob patterns
+#   - add regular-expression rules
+#   - add ignored files and directories
+#
+# You do NOT need to reproduce the entire configuration just to change one
+# setting.
+#
+# ---------------------------------------------------------------------------
+
+
+# ===========================================================================
+# GENERAL
+# ===========================================================================
+#
+# General application settings.
+#
+
+[general]
+
+# Directory used when no directory is supplied to the CLI.
+#
+# ~ is expanded to your home directory.
+#
+downloads_directory = "~/Downloads"
+
+
+# ===========================================================================
+# CATEGORIES
+# ===========================================================================
+#
+# Categories determine where files are archived.
+#
+# The key is the stable internal name used by rules.
+#
+# The "folder" value is the actual directory name created inside the
+# Downloads directory.
+#
+# Example:
+#
+#     [categories.documents]
+#     folder = "My Documents"
+#
+# means that files assigned to the "documents" category are moved to:
+#
+#     ~/Downloads/My Documents/
+#
+# You can change the folder name without changing any rules.
+#
+# You can also add completely new categories:
+#
+#     [categories.games]
+#     folder = "Games"
+#
+# Then rules can use:
+#
+#     ".game" = "games"
+#
+# Category keys should be lowercase, short, stable names.
+# Folder names may contain spaces and use normal filesystem naming rules.
+#
+
+
+[categories.documents]
+folder = "Documents"
+
+[categories.pictures]
+folder = "Pictures"
+
+[categories.audio]
+folder = "Music"
+
+[categories.video]
+folder = "Videos"
+
+[categories.code]
+folder = "Code Files"
+
+[categories.programs]
+folder = "Programs"
+
+[categories.archives]
+folder = "Archives"
+
+[categories.ebooks]
+folder = "Ebooks"
+
+[categories.other_files]
+folder = "Other Files"
+
+[categories.other_folders]
+folder = "Other Folders"
+
+
+# ---------------------------------------------------------------------------
+# Example custom category
+# ---------------------------------------------------------------------------
+#
+# Uncomment to create a new category:
+#
+# [categories.games]
+# folder = "Games"
+#
+# After creating it, rules can assign files to "games".
+#
+
+
+# ===========================================================================
+# IGNORE
+# ===========================================================================
+#
+# Files and directories listed here are never organized.
+#
+# Built-in ignored files are always ignored. These settings ADD to the
+# built-in ignore list.
+#
+# Use the exact filename for files.
+#
+# Example:
+#
+#     "my-file.txt"
+#
+# For directories, use the directory name.
+#
+# Example:
+#
+#     "MyFolder"
+#
+
+
+[ignore]
+
+files = [
+    # macOS
+    ".DS_Store",
+    ".localized",
+
+    # Windows
+    "desktop.ini",
+    "Thumbs.db",
+]
+
+directories = [
+    # Add directories that should never be moved.
+    #
+    # "keep-this-folder",
+]
+
+
+# ===========================================================================
+# RULES
+# ===========================================================================
+#
+# User-defined classification rules.
+#
+# Rules assign files to categories.
+#
+# The value on the right must be a valid category key.
+#
+# Built-in categories can be used directly:
+#
+#     "documents"
+#     "pictures"
+#     "audio"
+#     "video"
+#     "code"
+#     "programs"
+#     "archives"
+#     "ebooks"
+#     "other_files"
+#     "other_folders"
+#
+# Custom categories can also be used after defining them above.
+#
+# For example:
+#
+#     [categories.games]
+#     folder = "Games"
+#
+#     [rules.extensions]
+#     ".game" = "games"
+#
+#
+# ---------------------------------------------------------------------------
+# Rule precedence
+# ---------------------------------------------------------------------------
+#
+# When multiple rules could match the same file, the organizer evaluates
+# them in this order:
+#
+#     1. Exact filename
+#     2. Regular expression
+#     3. Glob pattern
+#     4. File extension
+#     5. Built-in fallback category
+#
+# This means a specific rule can override a more general rule.
+#
+# Example:
+#
+#     [rules.extensions]
+#     ".pdf" = "documents"
+#
+#     [rules.filenames]
+#     "invoice.pdf" = "work"
+#
+# If "invoice.pdf" exists, the filename rule wins over the ".pdf" rule.
+#
+
+
+# ===========================================================================
+# EXTENSION RULES
+# ===========================================================================
+#
+# Match files by their extension.
+#
+# Extensions should normally include the leading dot.
+#
+# Matching is case-insensitive.
+#
+# Examples:
+#
+#     ".pdf" = "documents"
+#     ".jpg" = "pictures"
+#     ".mp3" = "audio"
+#
+# These rules can override the application's built-in extension rules.
+#
+
+
+[rules.extensions]
+
+# Example:
+#
+# ".torrent" = "archives"
+# ".blend" = "code"
+
+
+# ===========================================================================
+# FILENAME RULES
+# ===========================================================================
+#
+# Match an exact filename.
+#
+# This is useful when one particular file should always go to a specific
+# category regardless of its extension.
+#
+# Examples:
+#
+#     "README" = "code"
+#     "Dockerfile" = "code"
+#
+
+
+[rules.filenames]
+
+# "README" = "code"
+# "Dockerfile" = "code"
+
+
+# ===========================================================================
+# GLOB / PATTERN RULES
+# ===========================================================================
+#
+# Match filenames using shell-style wildcard patterns.
+#
+# Supported wildcards include:
+#
+#     *    any number of characters
+#     ?    exactly one character
+#
+# Examples:
+#
+#     "*.torrent" = "archives"
+#     "invoice-*.pdf" = "documents"
+#     "IMG_*.png" = "pictures"
+#
+# Patterns are matched against the filename, not the complete path.
+#
+
+
+[rules.patterns]
+
+# "*.torrent" = "archives"
+# "invoice-*.pdf" = "documents"
+# "IMG_*.png" = "pictures"
+
+
+# ===========================================================================
+# REGULAR EXPRESSION RULES
+# ===========================================================================
+#
+# Match filenames using Python regular expressions.
+#
+# Regex rules are useful when glob patterns are not expressive enough.
+#
+# Examples:
+#
+#     "^invoice_[0-9]+\\.pdf$" = "documents"
+#
+# This matches:
+#
+#     invoice_001.pdf
+#     invoice_123.pdf
+#
+# but not:
+#
+#     old_invoice.pdf
+#
+# Regex patterns are compiled when the configuration is loaded.
+# An invalid regular expression will therefore cause the configuration
+# to be rejected instead of silently producing incorrect behavior.
+#
+
+
+[rules.regex]
+
+# "^invoice_[0-9]+\\.pdf$" = "documents"
+# "^IMG_[0-9]{4,6}\\.jpg$" = "pictures"
+
+
+# ===========================================================================
+# EXAMPLES
+# ===========================================================================
+#
+# The following examples show how a realistic custom configuration might
+# look. They are commented out so they do not affect the default behavior.
+#
+# ---------------------------------------------------------------------------
+# Example 1: Add a Games category
+# ---------------------------------------------------------------------------
+#
+# [categories.games]
+# folder = "Games"
+#
+# [rules.extensions]
+# ".game" = "games"
+#
+# [rules.patterns]
+# "*.rom" = "games"
+#
+#
+# ---------------------------------------------------------------------------
+# Example 2: Create a Work category
+# ---------------------------------------------------------------------------
+#
+# [categories.work]
+# folder = "Work"
+#
+# [rules.filenames]
+# "meeting-notes.txt" = "work"
+#
+# [rules.patterns]
+# "invoice-*.pdf" = "work"
+#
+#
+# ---------------------------------------------------------------------------
+# Example 3: Rename a built-in folder
+# ---------------------------------------------------------------------------
+#
+# [categories.documents]
+# folder = "My Documents"
+#
+# [categories.audio]
+# folder = "Music & Audio"
+#
+#
+# ---------------------------------------------------------------------------
+# Example 4: Combine everything
+# ---------------------------------------------------------------------------
+#
+# [categories.games]
+# folder = "Games"
+#
+# [categories.work]
+# folder = "Work"
+#
+# [rules.extensions]
+# ".torrent" = "archives"
+# ".game" = "games"
+#
+# [rules.filenames]
+# "README" = "code"
+#
+# [rules.patterns]
+# "invoice-*.pdf" = "work"
+#
+# [rules.regex]
+# "^IMG_[0-9]{4,6}\\.jpg$" = "pictures"
+#

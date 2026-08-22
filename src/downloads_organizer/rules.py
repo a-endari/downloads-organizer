@@ -7,18 +7,18 @@ from .models import Category
 
 
 def _build_default_rules(
-    category_extensions: dict[str, set[str]],
+    category_extensions: dict[Category, set[str]],
 ) -> dict[str, str]:
     """Flatten category->extensions into extension->category, erroring on overlap."""
     rules: dict[str, str] = {}
-    for category_key, extensions in category_extensions.items():
+    for category, extensions in category_extensions.items():
         for extension in extensions:
             if extension in rules:
                 raise ValueError(
                     f"Extension '{extension}' is assigned to both "
-                    f"{rules[extension]!r} and {category_key!r}."
+                    f"{rules[extension]!r} and {category.key!r}."
                 )
-            rules[extension] = category_key
+            rules[extension] = category.key
     return rules
 
 
@@ -199,10 +199,7 @@ class FileCategorizer:
                 return category
 
         extension = file_path.suffix.lower()
-        category = self.extensions.get(extension, Category.OTHER)
-        if isinstance(category, Category):
-            return category.key
-        return category
+        return self.extensions.get(extension, Category.OTHER.key)
 
 
 # Directory types that should be treated as files.

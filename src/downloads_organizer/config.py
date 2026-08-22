@@ -1,4 +1,6 @@
 import os
+import shutil
+import subprocess
 import sys
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -23,6 +25,51 @@ def default_config_path() -> Path:
     return base_dir / app_name / "config.toml"
 
 
+def init_config(template: Path, *, force: bool = False) -> Path:
+    """Create the user's configuration file from the supplied template."""
+    destination = default_config_path()
+
+    if destination.exists() and not force:
+        raise FileExistsError(
+            f"Configuration file already exists: {destination}",
+        )
+
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    destination.write_text(
+        template.read_text(encoding="utf-8"),
+    )
+
+    return destination
+
+
+def _find_editor() -> str:
+    """Return the first available editor from the user's environment or defaults."""
+    configured_editor = os.environ.get("EDITOR")
+
+    if configured_editor:
+        return configured_editor
+
+    if sys.platform == "win32":
+        candidates = ("notepad",)
+    else:
+        candidates = ("nvim", "vim", "nano")
+
+    for candidate in candidates:
+        if shutil.which(candidate):
+            return candidate
+
+    raise RuntimeError(
+        "No suitable text editor was found. "
+        "Set the EDITOR environment variable to your preferred editor.",
+    )
+
+
+def edit_config(path: Path) -> None:
+    """Open the configuration file in the user's preferred or fallback editor."""
+    editor = _find_editor()
+    subprocess.run([editor, str(path)], check=True)
+
+
 def _load_categories(data: dict) -> dict[str, str]:
     """
     Load category key -> folder name mappings.
@@ -34,11 +81,26 @@ def _load_categories(data: dict) -> dict[str, str]:
     categories: dict[str, str] = Category.default_categories()
     categories_data = data.get("categories", {})
 
+    category_aliases = {
+        "documents": "document",
+        "pictures": "picture",
+        "audio": "audio",
+        "video": "video",
+        "code": "code",
+        "programs": "program",
+        "archives": "archive",
+        "ebooks": "ebook",
+        "other_files": "other",
+        "other_folders": "other_folders",
+    }
+
     for key, category_data in categories_data.items():
         folder = category_data.get("folder")
         if folder is None:
             continue
-        categories[key] = folder
+
+        internal_key = category_aliases.get(key, key)
+        categories[internal_key] = folder
 
     return categories
 
@@ -105,7 +167,7 @@ def _load_rules(data: dict, known_categories: dict[str, str]) -> RulesConfig:
 class Config:
     """Resolved application configuration."""
 
-    downloads_directory: Path = DEFAULT_DOWNLOADS_DIR
+    downloads_directory: Path = field(default_factory=lambda: DEFAULT_DOWNLOADS_DIR)
     categories: dict[str, str] = field(default_factory=Category.default_categories)
     rules: RulesConfig = field(default_factory=RulesConfig)
 
