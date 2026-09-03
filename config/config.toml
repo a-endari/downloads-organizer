@@ -63,6 +63,12 @@
 downloads_directory = "~/Downloads"
 
 
+# Maximum length for filenames shown in verbose output before they are
+# shortened in the middle (e.g. "Some...Name.pdf").
+#
+# Set to 0 to disable truncation entirely and always show full filenames.
+#
+truncate_length = 45
 # ===========================================================================
 # CATEGORIES
 # ===========================================================================

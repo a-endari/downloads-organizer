@@ -9,8 +9,6 @@ from downloads_organizer.config import (
     load_config,
 )
 
-from .constants import DEFAULT_DOWNLOADS_DIR
-from .models import Category
 from .organizer import DownloadsOrganizer
 
 
@@ -26,12 +24,81 @@ def get_organizer(directory: Path) -> DownloadsOrganizer:
     return DownloadsOrganizer(directory, config=config)
 
 
+def truncate_filename(name: str, max_length: int = 45) -> str:
+    """Shorten a filename in the middle without changing its extension."""
+    if max_length <= 0 or len(name) <= max_length:
+        return name
+
+    suffix = Path(name).suffix
+    available = max_length - len(suffix) - 3
+
+    if available <= 0:
+        return name[:max_length]
+
+    left_length = available // 2
+    right_length = available - left_length
+
+    return f"{name[:left_length]}...{name[-right_length - len(suffix) : -len(suffix)]}{suffix}"
+
+
 def handle_stats(directory: Path) -> None:
+    """Display a summary of files in the selected directory."""
     organizer = get_organizer(directory)
     results = organizer.scan()
 
-    print(f"Directory : {directory.resolve()}")
-    print(f"Files     : {len(results)}")
+    category_counts: dict[str, int] = {}
+
+    for result in results:
+        category_counts[result.category] = category_counts.get(result.category, 0) + 1
+
+    print()
+    print("Downloads Organizer")
+    print("===================")
+    print()
+
+    print("Directory")
+    print(f"  {directory.expanduser().resolve()}")
+    print()
+
+    count = len(results)
+    noun = "file" if count == 1 else "files"
+
+    print("Summary")
+    print(f"  {count} {noun}")
+    print()
+
+    if not results:
+        print("Nothing to organize. Your Downloads folder is clean!")
+        return
+
+    print("Files by category")
+
+    for category, count in sorted(category_counts.items()):
+        folder = organizer.config.categories.get(category, category)
+        print(f"  {folder:<15} {count}")
+
+    print()
+    print("Next steps")
+    print("  Preview changes:   downloads-organizer organize --dry-run")
+    print("  More information:  downloads-organizer organize -h")
+
+
+def resolve_category(value: str, categories: dict[str, str]) -> str:
+    """Resolve a user-provided category name to its internal category key."""
+    normalized = value.strip().casefold()
+
+    if normalized in categories:
+        return normalized
+
+    for key, folder in categories.items():
+        if folder.casefold() == normalized:
+            return key
+
+    available = ", ".join(f"{key} ({folder})" for key, folder in categories.items())
+
+    raise ValueError(
+        f"Unknown category '{value}'. Available categories: {available}",
+    )
 
 
 def handle_organize(
@@ -39,28 +106,41 @@ def handle_organize(
     *,
     dry_run: bool,
     verbose: bool,
-    only: Category | None = None,
+    only: str | None = None,
 ) -> None:
     organizer = get_organizer(directory)
 
     if dry_run:
         move_results = organizer.plan_moves(only=only)
-
     else:
         move_results = organizer.organize(only=only)
 
     if not move_results:
         print("No files to organize.")
-
         return
 
     verb = "Would move" if dry_run else "Moved"
     count = len(move_results)
     noun = "file" if count == 1 else "files"
     print(f"{verb} {count} {noun}.")
+
     if verbose:
+        groups: dict[Path, list[Path]] = {}
         for move in move_results:
-            print(f"{move.source.name} -> {move.destination.relative_to(directory)}")
+            destination_folder = move.destination.relative_to(directory).parent
+            groups.setdefault(destination_folder, []).append(move.source)
+
+        no = 1
+        print("Details of the files that would be moved and their categories:\n")
+        for destination_folder, sources in sorted(groups.items()):
+            print(f'Into "{destination_folder}" folder:')
+            for source in sources:
+                print(
+                    f" {no:02d} - {
+                        truncate_filename(source.name, organizer.config.truncate_lenght)
+                    }"
+                )
+                no += 1
 
 
 def _insert_default_command(argv: list[str], commands: set[str]) -> list[str]:
@@ -167,7 +247,7 @@ def run() -> int:
         "directory",
         nargs="?",
         type=Path,
-        default=DEFAULT_DOWNLOADS_DIR,
+        default=config.downloads_directory,
         help="Directory to organize (defaults to your Downloads folder.)",
     )
 
@@ -189,23 +269,26 @@ def run() -> int:
         metavar="CATEGORY",
         help=(
             "Only organize files from a single category.\n"
-            f"Available categories: {', '.join(Category.values())}"
+            "Use either the category key or folder name. "
+            "Available categories: "
+            + ", ".join(f"{key} ({folder})" for key, folder in config.categories.items())
         ),
     )
+
     commands = set(subparser.choices)
     argv = _insert_default_command(sys.argv[1:], commands)
     args = parser.parse_args(argv)
 
     try:
-        if args.command is None or args.command == "stats":
+        if args.command == "stats":
             handle_stats(args.directory)
 
         elif args.command == "organize":
-            only: Category | None = None
+            only: str | None = None
 
             if args.only is not None:
                 try:
-                    only = Category.from_string(args.only)
+                    only = resolve_category(args.only, config.categories)
                 except ValueError as error:
                     parser.error(str(error))
 

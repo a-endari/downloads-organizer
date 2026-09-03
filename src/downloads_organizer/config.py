@@ -170,6 +170,7 @@ class Config:
     downloads_directory: Path = field(default_factory=lambda: DEFAULT_DOWNLOADS_DIR)
     categories: dict[str, str] = field(default_factory=Category.default_categories)
     rules: RulesConfig = field(default_factory=RulesConfig)
+    truncate_lenght: int = 45
 
     ignored_files: set[str] = field(
         default_factory=DEFAULT_IGNORED_FILES.copy,
@@ -197,6 +198,8 @@ def load_config(path: Path | None = None) -> Config:
         general.get("downloads_directory", DEFAULT_DOWNLOADS_DIR),
     ).expanduser()
 
+    truncate_lenght = general.get("truncate_lenght", 45)
+
     categories = _load_categories(data)
     rules = _load_rules(data, categories)
 
@@ -211,6 +214,7 @@ def load_config(path: Path | None = None) -> Config:
         downloads_directory=downloads_directory,
         categories=categories,
         rules=rules,
+        truncate_lenght=truncate_lenght,
         ignored_files=ignored_files,
         ignored_directories=ignored_directories,
     )
