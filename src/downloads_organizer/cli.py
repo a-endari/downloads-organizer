@@ -141,6 +141,7 @@ def handle_organize(
                     }"
                 )
                 no += 1
+        print()
 
 
 def _insert_default_command(argv: list[str], commands: set[str]) -> list[str]:

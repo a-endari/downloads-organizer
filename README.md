@@ -11,6 +11,9 @@
 
 </div>
 
+## Demo
+
+![Downloads Organizer demo](docs/demo/Downloads-Organizer-Demo.gif)
 ---
 
 > [!IMPORTANT]
