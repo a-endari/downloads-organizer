@@ -10,9 +10,15 @@
 [![Privacy](https://img.shields.io/badge/Privacy-100%25%20Offline-success?style=for-the-badge)](#-why-no-ai)
 [![Stars](https://img.shields.io/github/stars/a-endari/downloads-organizer?style=for-the-badge)](https://github.com/a-endari/downloads-organizer/stargazers)
 
-[**Try it Now**](#-quick-start) • [**See It in Action**](#-how-it-looks-in-action) • [**Contribute**](#-contributing) • [**Report Issues**](https://github.com/a-endari/downloads-organizer/issues)
+[**Try it Now**](#-quick-start) • [**See It in Action**](#demo) • [**Contribute**](#-contributing) • [**Report Issues**](https://github.com/a-endari/downloads-organizer/issues)
 
 </div>
+
+---
+
+## 📹 Demo
+
+![Downloads Organizer demo](docs/demo/Downloads-Organizer-Demo.gif)
 
 ---
 
@@ -43,6 +49,14 @@ You tell yourself: *"I'll organize this this weekend"*... and never do.
 | 📋 **Safe by Default** | `--dry-run` mode previews changes first |
 | 🛡️ **Zero Dependencies** | Pure Python 3.13 standard library |
 | 🤖 **No AI Nonsense** | Deterministic, predictable rules every time |
+
+---
+
+## 🎯 The Ultimate Goal
+
+> [!IMPORTANT]
+> **Eventually, this tool will opinionatedly clean up your Downloads folder completely automatically in the background—without you ever noticing *(or even having to permit it 😏)*.**  
+> *(Work in progress!)*
 
 ---
 
@@ -209,6 +223,19 @@ I *could* have built this with a machine learning model or cloud API. Instead, I
 
 ---
 
+## 🎯 Core Design Principles
+
+I built this around principles I care about:
+
+- 🎯 **Single-minded** — It cleans `~/Downloads`. It won't touch the rest of your system.
+- ⚡ **Predictable** — A PDF goes to `Documents/` every single time. No surprises.
+- 🔒 **Private & Offline** — Everything stays on your machine. Zero network calls.
+- 🪶 **Zero Dependencies** — Runs entirely on Python's standard library.
+- 🛡️ **Mac Package Safety** — Smart enough to treat macOS `.app`, `.bundle`, and `.framework` directories as single files.
+- 🤫 **Quiet** — It does its job and gets out of your way.
+
+---
+
 ## 🛠️ Under the Hood
 
 Built with engineering best practices:
@@ -218,8 +245,6 @@ Built with engineering best practices:
 - **Standard Library Only** — Zero runtime dependencies (just Python 3.13+)
 - **Tested** — Comprehensive unit and integration tests
 - **Conventional Commits** — Clean, readable Git history
-
-See the [contributing guide](#-contributing) for architecture details.
 
 ---
 
@@ -285,14 +310,6 @@ If this tool saves you time or keeps your Downloads folder clean, consider:
 - **Preview first** — Always use `--dry-run` on first run to verify behavior
 - **Check config** — Review your ignore list to prevent important files from moving
 - **Customize categories** — Modify the config to match your workflow
-
----
-
-## 🎯 The Ultimate Vision
-
-**Eventually, this tool will opinionatedly clean up your Downloads folder completely automatically in the background — without you ever noticing (or even having to permit it).**
-
-Until then, one command per week keeps the chaos away. 🧹
 
 ---
 
