@@ -80,6 +80,8 @@ class FileCategorizer:
         ".webm",
         ".m4v",
         ".flv",
+        ".srt",
+        ".vtt",
     }
 
     AUDIO_EXTENSIONS = {

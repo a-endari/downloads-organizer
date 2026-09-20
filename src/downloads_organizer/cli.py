@@ -107,16 +107,20 @@ def handle_organize(
     dry_run: bool,
     verbose: bool,
     only: str | None = None,
+    clean_empty: bool = False,
 ) -> None:
     organizer = get_organizer(directory)
 
     if dry_run:
         move_results = organizer.plan_moves(only=only)
     else:
-        move_results = organizer.organize(only=only)
+        move_results = organizer.organize(
+            only=only,
+            clean_empty=clean_empty,
+        )
 
-    if not move_results:
-        print("No files to organize.")
+    if not move_results and not clean_empty:
+        print("No files or folders to organize.")
         return
 
     verb = "Would move" if dry_run else "Moved"
@@ -137,7 +141,7 @@ def handle_organize(
             for source in sources:
                 print(
                     f" {no:02d} - {
-                        truncate_filename(source.name, organizer.config.truncate_lenght)
+                        truncate_filename(source.name, organizer.config.truncate_length)
                     }"
                 )
                 no += 1
@@ -253,6 +257,12 @@ def run() -> int:
     )
 
     organize_parser.add_argument(
+        "--clean-empty",
+        action="store_true",
+        help="Remove empty category folders after organizing.",
+    )
+
+    organize_parser.add_argument(
         "--dry-run",
         action="store_true",
         help="Show what would be moved without moving files.",
@@ -298,6 +308,7 @@ def run() -> int:
                 dry_run=args.dry_run,
                 verbose=args.verbose,
                 only=only,
+                clean_empty=args.clean_empty,
             )
 
         elif args.command == "config":

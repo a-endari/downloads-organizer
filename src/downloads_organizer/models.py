@@ -49,3 +49,10 @@ class MoveResult:
     source: Path
     destination: Path
     category: str
+
+
+@dataclass(slots=True, frozen=True)
+class DirectoryRemoval:
+    """Represents an empty directory scheduled for removal."""
+
+    directory: Path

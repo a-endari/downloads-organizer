@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "downloads-organizer"
-version = "0.1.0"
+version = "0.5.0"
 description = "A lightweight, deterministic, privacy-first Downloads folder organizer."
 readme = "README.md"
 requires-python = ">=3.13"
@@ -21,6 +21,9 @@ classifiers = [
 dev = ["pytest", "ruff"]
 
 [project.scripts]
+dlo = "downloads_organizer.main:main"
 downloads-organizer = "downloads_organizer.main:main"
+ae-dlo = "downloads_organizer.main:main"
+
 [project.urls]
 Homepage = "https://github.com/a-endari/downloads-organizer"

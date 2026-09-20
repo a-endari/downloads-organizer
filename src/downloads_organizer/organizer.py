@@ -3,6 +3,7 @@ from collections.abc import Iterator
 from pathlib import Path
 
 from .config import Config, load_config
+from .constants import DEFAULT_IGNORED_FILES
 from .models import Category, MoveResult, ScanResult
 from .rules import PACKAGE_EXTENSIONS, FileCategorizer
 
@@ -54,6 +55,37 @@ class DownloadsOrganizer:
                 continue
 
             yield item
+
+    def _is_effectively_empty(self, directory: Path) -> bool:
+        """Return True if a directory contains no meaningful user content."""
+        return all(item.name in DEFAULT_IGNORED_FILES for item in directory.iterdir())
+
+    def empty_category_directories(self) -> list[Path]:
+        """Return empty configured category directories."""
+        empty_directories: list[Path] = []
+
+        for folder_name in self.config.categories.values():
+            directory = self.source_directory / folder_name
+
+            if directory.is_dir() and self._is_effectively_empty(directory):
+                empty_directories.append(directory)
+
+        return empty_directories
+
+    def clean_empty_category_directories(self) -> list[Path]:
+        """Remove empty configured category directories."""
+        empty_directories = self.empty_category_directories()
+
+        for directory in empty_directories:
+            # Remove ignored files like .DS_Store so rmdir() succeeds
+            for item in directory.iterdir():
+                if item.name in DEFAULT_IGNORED_FILES:
+                    item.unlink()
+            directory.rmdir()
+
+        end = "Directory" if len(empty_directories) < 2 else "Directories"
+        print(f"Removed {len(empty_directories)} {end}.")
+        return empty_directories
 
     def scan(self) -> list[ScanResult]:
         """Scan the directory and return categorized files."""
@@ -140,7 +172,12 @@ class DownloadsOrganizer:
 
         return move_results
 
-    def organize(self, only: str | None = None) -> list[MoveResult]:
+    def organize(
+        self,
+        only: str | None = None,
+        *,
+        clean_empty: bool = False,
+    ) -> list[MoveResult]:
         """
         Move files and folders into their category directories.
 
@@ -157,5 +194,8 @@ class DownloadsOrganizer:
                 move.source,
                 move.destination,
             )
+
+        if clean_empty:
+            self.clean_empty_category_directories()
 
         return move_results
