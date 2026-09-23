@@ -113,38 +113,55 @@ def handle_organize(
 
     if dry_run:
         move_results = organizer.plan_moves(only=only)
+        empty_directories = organizer.empty_category_directories(only=only) if clean_empty else []
     else:
-        move_results = organizer.organize(
-            only=only,
-            clean_empty=clean_empty,
+        move_results = organizer.organize(only=only)
+        empty_directories = (
+            organizer.clean_empty_category_directories(only=only) if clean_empty else []
         )
 
-    if not move_results and not clean_empty:
+    if not move_results and not empty_directories:
         print("No files or folders to organize.")
         return
 
-    verb = "Would move" if dry_run else "Moved"
-    count = len(move_results)
-    noun = "file" if count == 1 else "files"
-    print(f"{verb} {count} {noun}.")
+    if move_results:
+        verb = "Would move" if dry_run else "Moved"
+        count = len(move_results)
+        noun = "file" if count == 1 else "files"
+        print(f"{verb} {count} {noun}.")
+
+    if empty_directories:
+        verb = "Would remove" if dry_run else "Removed"
+        count = len(empty_directories)
+        noun = "directory" if count == 1 else "directories"
+        print(f"{verb} {count} {noun}.")
 
     if verbose:
         groups: dict[Path, list[Path]] = {}
+
         for move in move_results:
             destination_folder = move.destination.relative_to(directory).parent
             groups.setdefault(destination_folder, []).append(move.source)
 
         no = 1
-        print("Details of the files that would be moved and their categories:\n")
+        print("Details:\n")
+
+        if empty_directories:
+            print("Directories to be removed:" if dry_run else "Removed directories:")
+            for directory_path in empty_directories:
+                print(f" {no:04d} - {directory_path.relative_to(directory)}")
+                no += 1
+            print()
+
         for destination_folder, sources in sorted(groups.items()):
-            print(f'Into "{destination_folder}" folder:')
+            print(f'Files going into "{destination_folder}" folder:')
+
             for source in sources:
                 print(
-                    f" {no:02d} - {
-                        truncate_filename(source.name, organizer.config.truncate_length)
-                    }"
+                    f" {no:04d} - {truncate_filename(source.name, organizer.config.truncate_length)}"
                 )
                 no += 1
+
         print()
 
 
@@ -188,7 +205,7 @@ def run() -> int:
     config = load_config()
     parser = argparse.ArgumentParser(
         prog="downloads-organizer",
-        description="Safely organize and manage your Downloads folder.",
+        description="Safely organize and manage any Downloads folder.",
         epilog=(
             "Examples:\n"
             "  downloads-organizer\n"

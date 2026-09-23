@@ -60,11 +60,18 @@ class DownloadsOrganizer:
         """Return True if a directory contains no meaningful user content."""
         return all(item.name in DEFAULT_IGNORED_FILES for item in directory.iterdir())
 
-    def empty_category_directories(self) -> list[Path]:
+    def empty_category_directories(
+        self,
+        *,
+        only: str | None = None,
+    ) -> list[Path]:
         """Return empty configured category directories."""
         empty_directories: list[Path] = []
 
-        for folder_name in self.config.categories.values():
+        for key, folder_name in self.config.categories.items():
+            if only is not None and key != only and folder_name != only:
+                continue
+
             directory = self.source_directory / folder_name
 
             if directory.is_dir() and self._is_effectively_empty(directory):
@@ -72,19 +79,21 @@ class DownloadsOrganizer:
 
         return empty_directories
 
-    def clean_empty_category_directories(self) -> list[Path]:
+    def clean_empty_category_directories(
+        self,
+        *,
+        only: str | None = None,
+    ) -> list[Path]:
         """Remove empty configured category directories."""
-        empty_directories = self.empty_category_directories()
+        empty_directories = self.empty_category_directories(only=only)
 
         for directory in empty_directories:
-            # Remove ignored files like .DS_Store so rmdir() succeeds
             for item in directory.iterdir():
                 if item.name in DEFAULT_IGNORED_FILES:
                     item.unlink()
+
             directory.rmdir()
 
-        end = "Directory" if len(empty_directories) < 2 else "Directories"
-        print(f"Removed {len(empty_directories)} {end}.")
         return empty_directories
 
     def scan(self) -> list[ScanResult]:
@@ -196,6 +205,6 @@ class DownloadsOrganizer:
             )
 
         if clean_empty:
-            self.clean_empty_category_directories()
+            self.clean_empty_category_directories(only=only)
 
         return move_results
