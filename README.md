@@ -22,6 +22,8 @@
 
 ---
 
+## [Read the Full User Manual](docs/user_manual.md)
+
 ## 🎯 The Problem
 
 Your Downloads folder is a digital junk drawer:
@@ -31,7 +33,7 @@ Your Downloads folder is a digital junk drawer:
 - 💻 Code snippets alongside installers
 - 📦 Archives and compressed files everywhere
 
-You tell yourself: *"I'll organize this this weekend"*... and never do.
+You tell yourself: _"I'll organize this this weekend"_... and never do.
 
 **Downloads Organizer solves this in one command.**
 
@@ -39,24 +41,24 @@ You tell yourself: *"I'll organize this this weekend"*... and never do.
 
 ## ✨ Why Download This?
 
-| Feature | Benefit |
-|---------|---------|
-| 🚀 **One Command** | `downloads-organizer organize` — that's it |
-| 🔒 **100% Private** | No cloud, no telemetry, no AI hallucinations |
-| ⚡ **Lightning Fast** | Runs in milliseconds, not seconds |
-| 🎯 **Smart Sorting** | 9 intelligent categories + custom rules |
-| 🍎 **macOS Native** | Treats `.app` bundles as single files |
-| 📋 **Safe by Default** | `--dry-run` mode previews changes first |
-| 🛡️ **Zero Dependencies** | Pure Python 3.13 standard library |
-| 🤖 **No AI Nonsense** | Deterministic, predictable rules every time |
+| Feature                  | Benefit                                      |
+| ------------------------ | -------------------------------------------- |
+| 🚀 **One Command**       | `downloads-organizer organize` — that's it   |
+| 🔒 **100% Private**      | No cloud, no telemetry, no AI hallucinations |
+| ⚡ **Lightning Fast**    | Runs in milliseconds, not seconds            |
+| 🎯 **Smart Sorting**     | 9 intelligent categories + custom rules      |
+| 🍎 **macOS Native**      | Treats `.app` bundles as single files        |
+| 📋 **Safe by Default**   | `--dry-run` mode previews changes first      |
+| 🛡️ **Zero Dependencies** | Pure Python 3.13 standard library            |
+| 🤖 **No AI Nonsense**    | Deterministic, predictable rules every time  |
 
 ---
 
 ## 🎯 The Ultimate Goal
 
 > [!IMPORTANT]
-> **Eventually, this tool will opinionatedly clean up your Downloads folder completely automatically in the background—without you ever noticing *(or even having to permit it 😏)*.**  
-> *(Work in progress!)*
+> **Eventually, this tool will opinionatedly clean up your Downloads folder completely automatically in the background—without you ever noticing _(or even having to permit it 😏)_.**  
+> _(Work in progress!)_
 
 ---
 
@@ -107,17 +109,17 @@ Downloads/
 
 Downloads Organizer automatically categorizes files into 9 intelligent folders:
 
-| Category | Folder | Common Files |
-|----------|--------|--------------|
-| 📄 | `Documents` | `.pdf`, `.doc`, `.docx`, `.xlsx`, `.pptx`, `.txt`, `.md`, `.csv` |
-| 🖼️ | `Pictures` | `.jpg`, `.png`, `.webp`, `.gif`, `.heic`, `.avif`, `.svg` |
-| 🎵 | `Audio` | `.mp3`, `.wav`, `.flac`, `.aac`, `.m4a`, `.ogg` |
-| 🎬 | `Video` | `.mp4`, `.mkv`, `.mov`, `.webm`, `.avi`, `.m4v` |
-| 💻 | `Code` | `.py`, `.js`, `.ts`, `.html`, `.css`, `.json`, `.toml`, `.cpp`, `.rs` |
-| ⚙️ | `Programs` | `.exe`, `.dmg`, `.pkg`, `.deb`, `.app`, `.msi`, `.apk` |
-| 📦 | `Archives` | `.zip`, `.tar`, `.gz`, `.7z`, `.rar`, `.bz2`, `.iso` |
-| 📚 | `Ebooks` | `.epub`, `.mobi`, `.azw`, `.azw3`, `.fb2` |
-| 📁 | `Other Files` / `Other Folders` | Everything else |
+| Category | Folder                          | Common Files                                                          |
+| -------- | ------------------------------- | --------------------------------------------------------------------- |
+| 📄       | `Documents`                     | `.pdf`, `.doc`, `.docx`, `.xlsx`, `.pptx`, `.txt`, `.md`, `.csv`      |
+| 🖼️       | `Pictures`                      | `.jpg`, `.png`, `.webp`, `.gif`, `.heic`, `.avif`, `.svg`             |
+| 🎵       | `Audio`                         | `.mp3`, `.wav`, `.flac`, `.aac`, `.m4a`, `.ogg`                       |
+| 🎬       | `Video`                         | `.mp4`, `.mkv`, `.mov`, `.webm`, `.avi`, `.m4v`                       |
+| 💻       | `Code`                          | `.py`, `.js`, `.ts`, `.html`, `.css`, `.json`, `.toml`, `.cpp`, `.rs` |
+| ⚙️       | `Programs`                      | `.exe`, `.dmg`, `.pkg`, `.deb`, `.app`, `.msi`, `.apk`                |
+| 📦       | `Archives`                      | `.zip`, `.tar`, `.gz`, `.7z`, `.rar`, `.bz2`, `.iso`                  |
+| 📚       | `Ebooks`                        | `.epub`, `.mobi`, `.azw`, `.azw3`, `.fb2`                             |
+| 📁       | `Other Files` / `Other Folders` | Everything else                                                       |
 
 ---
 
@@ -155,7 +157,7 @@ Shows a summary of files ready to be organized.
 downloads-organizer organize --dry-run
 ```
 
-Displays what *would* move without actually moving anything.
+Displays what _would_ move without actually moving anything.
 
 ### 3. **Run the organization**
 
@@ -185,6 +187,7 @@ downloads-organizer --help
 Want custom rules? Create a `config.toml` in your config directory:
 
 **Config File Locations:**
+
 - **macOS/Linux:** `~/.config/downloads-organizer/config.toml`
 - **Windows:** `%APPDATA%\downloads-organizer\config.toml`
 
@@ -213,7 +216,7 @@ directories = ["In_Progress", "Keep_Here", "Current_Projects"]
 
 ## 🤔 Why Not AI?
 
-I *could* have built this with a machine learning model or cloud API. Instead, I chose **deterministic rules** because:
+I _could_ have built this with a machine learning model or cloud API. Instead, I chose **deterministic rules** because:
 
 - ⚡ **Instant** — Runs in milliseconds, not seconds
 - 🔒 **Private** — Your files never leave your computer
