@@ -50,9 +50,9 @@ def _find_editor() -> str:
         return configured_editor
 
     if sys.platform == "win32":
-        candidates = ("notepad",)
+        candidates = ("nvim", "notepad", "code")
     else:
-        candidates = ("nvim", "vim", "nano")
+        candidates = ("nvim", "vim", "nano", "code")
 
     for candidate in candidates:
         if shutil.which(candidate):
