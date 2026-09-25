@@ -16,10 +16,13 @@
 
 ---
 
-## 📹 Demo
+## Demo
 
-![Downloads Organizer demo](docs/demo/Downloads-Organizer-Demo.gif)
+Here is `downloads-organizer` in action:
 
+![Downloads Organizer demo](demo/demo.gif)
+
+_This demo terminal recording was created using [VHS](https://github.com/charmbracelet/vhs) by Charm._
 ---
 
 ## [Read the Full User Manual](docs/user_manual.md)
