@@ -24,7 +24,13 @@ Hide
 Type "source ~/.zshrc"
 Enter 1
 
-Type "rm -rf ~/Downloads/Demo && mkdir -p ~/Downloads/Demo/{Old\ Files/Invoices,Project\ Files/src,Empty\ Category,MyUtility.app/Contents/MacOS} && touch ~/Downloads/Demo/{report.pdf,presentation.pptx,budget.xlsx,invoice_2026.pdf,photo.jpg,screenshot.png,logo.svg,archive.zip,backup.tar.gz,script.py,app.js,data.json,notes.txt,installer.dmg,Old\ Files/Invoices/invoice_old.pdf,Project\ Files/src/main.py,MyUtility.app/Contents/MacOS/MyUtility}"
+Type "rm -rf ~/Downloads/Demo && mkdir -p ~/Downloads/Demo/Archives"
+Enter 1
+
+Type "touch ~/Downloads/Demo/{report.pdf,presentation.pptx,budget.xlsx,invoice_2026.pdf,invoice_final.pdf,invoice_final_final.pdf,tax_form_scanned.PDF,receipt_1847.pdf,photo.jpg,vacation.jpg,vacation_raw.CR2,screenshot.png,screenshot_2026-09-25.png,logo.svg,banner.ai,banner_v2.ai,archive.zip,backup.tar.gz,config.bak,script.py,app.js,data.json,payload.xml,notes.txt,todo_list.md,meeting_notes.txt,installer.dmg,setup_v1.2.pkg,update.pkg,random_file.tmp,project_backup.zip}"
+Enter 1
+
+Type "touch ~/Downloads/Demo/Archives/{project_backup.zip}"
 Enter 1
 
 # Enter the project directory
@@ -116,11 +122,17 @@ Sleep 2s
 Type "# Now let's take a look at the final result:"
 Enter 1
 Sleep 1s
+Type "lsd ~/Downloads/Demo"
+Enter 1
+Sleep 2s
+Type "# Are the files organized? let's take a deeper look:"
+Enter 1
+
 Type "lsd --tree --depth 2 ~/Downloads/Demo"
 Enter 1
 Sleep 2s
 
-ScrollUp@150ms 15
+ScrollUp@150ms 25
 Sleep 1.5s
-ScrollDown@150ms 15
+ScrollDown@150ms 25
 Sleep 5s
