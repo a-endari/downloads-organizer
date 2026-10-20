@@ -175,11 +175,10 @@ def _insert_default_command(argv: list[str], commands: set[str]) -> list[str]:
 def handle_config(args: argparse.Namespace) -> None:
     """Handle configuration management commands."""
     config_path = default_config_path()
-    template_path = Path("config/config.toml")
 
     if args.init:
         try:
-            created_path = init_config(template_path)
+            created_path = init_config()
         except FileExistsError as error:
             print(error)
             return
@@ -190,7 +189,7 @@ def handle_config(args: argparse.Namespace) -> None:
     if args.edit:
         if not config_path.exists():
             try:
-                init_config(template_path)
+                init_config()
             except FileExistsError:
                 pass
 

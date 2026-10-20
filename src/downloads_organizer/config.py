@@ -2,10 +2,10 @@ import os
 import shutil
 import subprocess
 import sys
-from dataclasses import dataclass, field
-from pathlib import Path
-
 import tomllib
+from dataclasses import dataclass, field
+from importlib.resources import files
+from pathlib import Path
 
 from .constants import DEFAULT_DOWNLOADS_DIR, DEFAULT_IGNORED_FILES
 from .models import Category
@@ -25,7 +25,7 @@ def default_config_path() -> Path:
     return base_dir / app_name / "config.toml"
 
 
-def init_config(template: Path, *, force: bool = False) -> Path:
+def init_config(*, force: bool = False) -> Path:
     """Create the user's configuration file from the supplied template."""
     destination = default_config_path()
 
@@ -34,10 +34,14 @@ def init_config(template: Path, *, force: bool = False) -> Path:
             f"Configuration file already exists: {destination}",
         )
 
-    destination.parent.mkdir(parents=True, exist_ok=True)
-    destination.write_text(
-        template.read_text(encoding="utf-8"),
+    template = (
+        files("downloads_organizer")
+        .joinpath("templates")
+        .joinpath("config.toml")
+        .read_text(encoding="utf-8")
     )
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    destination.write_text(template, encoding="utf-8")
 
     return destination
 
@@ -95,6 +99,8 @@ def _load_categories(data: dict) -> dict[str, str]:
     }
 
     for key, category_data in categories_data.items():
+        if not isinstance(key, str):
+            continue
         folder = category_data.get("folder")
         if folder is None:
             continue
