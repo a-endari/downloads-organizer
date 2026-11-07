@@ -1,12 +1,15 @@
 from importlib.resources import files
 from pathlib import Path
 
-import downloads_organizer.config as config_module
 import pytest
+
+import downloads_organizer.config as config_module
 
 
 def test_packaged_config_template_is_available() -> None:
-    template = files("downloads_organizer").joinpath("templates").joinpath("config.toml")
+    template = (
+        files("downloads_organizer").joinpath("templates").joinpath("config.toml")
+    )
 
     assert template.is_file()
     assert "downloads_directory" in template.read_text(encoding="utf-8")

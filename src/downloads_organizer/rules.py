@@ -1,6 +1,7 @@
 import re
 from fnmatch import fnmatch
 from pathlib import Path
+from typing import ClassVar
 
 from .config import RulesConfig
 from .models import Category
@@ -25,7 +26,7 @@ def _build_default_rules(
 class FileCategorizer:
     """Determine the category of a file based on its extension."""
 
-    DOCUMENT_EXTENSIONS = {
+    DOCUMENT_EXTENSIONS: ClassVar[set[str]] = {
         ".pdf",
         ".doc",
         ".docx",
@@ -46,7 +47,7 @@ class FileCategorizer:
         ".key",
     }
 
-    EBOOK_EXTENSIONS = {
+    EBOOK_EXTENSIONS: ClassVar[set[str]] = {
         ".epub",
         ".mobi",
         ".azw",
@@ -54,7 +55,7 @@ class FileCategorizer:
         ".fb2",
     }
 
-    IMAGE_EXTENSIONS = {
+    IMAGE_EXTENSIONS: ClassVar[set[str]] = {
         ".jpg",
         ".jpeg",
         ".png",
@@ -71,7 +72,7 @@ class FileCategorizer:
         ".ico",
     }
 
-    VIDEO_EXTENSIONS = {
+    VIDEO_EXTENSIONS: ClassVar[set[str]] = {
         ".mp4",
         ".mkv",
         ".mov",
@@ -84,7 +85,7 @@ class FileCategorizer:
         ".vtt",
     }
 
-    AUDIO_EXTENSIONS = {
+    AUDIO_EXTENSIONS: ClassVar[set[str]] = {
         ".mp3",
         ".wav",
         ".flac",
@@ -94,7 +95,7 @@ class FileCategorizer:
         ".wma",
     }
 
-    ARCHIVE_EXTENSIONS = {
+    ARCHIVE_EXTENSIONS: ClassVar[set[str]] = {
         ".zip",
         ".tbz2",
         ".rar",
@@ -107,7 +108,7 @@ class FileCategorizer:
         ".iso",
     }
 
-    PROGRAM_EXTENSIONS = {
+    PROGRAM_EXTENSIONS: ClassVar[set[str]] = {
         ".exe",
         ".msi",
         ".dmg",
@@ -119,7 +120,7 @@ class FileCategorizer:
         ".appimage",
     }
 
-    CODE_EXTENSIONS = {
+    CODE_EXTENSIONS: ClassVar[set[str]] = {
         ".py",
         ".ipynb",
         ".js",
@@ -155,7 +156,7 @@ class FileCategorizer:
         ".cfg",
     }
 
-    CATEGORY_EXTENSIONS = {
+    CATEGORY_EXTENSIONS: ClassVar[dict[Category, set[str]]] = {
         Category.DOCUMENT: DOCUMENT_EXTENSIONS,
         Category.EBOOK: EBOOK_EXTENSIONS,
         Category.PICTURE: IMAGE_EXTENSIONS,
@@ -172,11 +173,13 @@ class FileCategorizer:
         self.rules = RulesConfig() if rules is None else rules
 
         self.extensions = self.DEFAULT_RULES | {
-            extension.lower(): category for extension, category in self.rules.extensions.items()
+            extension.lower(): category
+            for extension, category in self.rules.extensions.items()
         }
 
         self._compiled_regex: list[tuple[re.Pattern[str], str]] = [
-            (re.compile(pattern), category) for pattern, category in self.rules.regex.items()
+            (re.compile(pattern), category)
+            for pattern, category in self.rules.regex.items()
         ]
 
     def get_category(self, file_path: Path) -> str:

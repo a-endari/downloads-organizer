@@ -1,6 +1,7 @@
 from pathlib import Path
 
 import pytest
+
 from downloads_organizer.models import Category
 from downloads_organizer.rules import FileCategorizer
 

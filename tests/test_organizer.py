@@ -174,7 +174,7 @@ def test_organize_multiple_files(tmp_path: Path) -> None:
     (tmp_path / "photo.jpg").write_text("jpg")
     (tmp_path / "song.mp3").write_text("mp3")
 
-    organizer = DownloadsOrganizer(tmp_path)
+    organizer = DownloadsOrganizer(tmp_path, config=Config())
 
     organizer.organize()
 

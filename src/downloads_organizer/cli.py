@@ -113,7 +113,9 @@ def handle_organize(
 
     if dry_run:
         move_results = organizer.plan_moves(only=only)
-        empty_directories = organizer.empty_category_directories(only=only) if clean_empty else []
+        empty_directories = (
+            organizer.empty_category_directories(only=only) if clean_empty else []
+        )
     else:
         move_results = organizer.organize(only=only)
         empty_directories = (
@@ -298,7 +300,9 @@ def run() -> int:
             "Only organize files from a single category.\n"
             "Use either the category key or folder name. "
             "Available categories: "
-            + ", ".join(f"{key} ({folder})" for key, folder in config.categories.items())
+            + ", ".join(
+                f"{key} ({folder})" for key, folder in config.categories.items()
+            )
         ),
     )
 
