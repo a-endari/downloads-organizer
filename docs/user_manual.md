@@ -87,10 +87,10 @@ Files and directories found directly inside your download root are classified in
 | `documents`           | `Documents`         | `.pdf`, `.doc`, `.docx`, `.txt`, `.xlsx`, `.pptx`, `.md`, `.csv`, etc.      |
 | `pictures`            | `Pictures`          | `.jpg`, `.png`, `.webp`, `.gif`, `.heic`, `.avif`, `.svg`, etc.             |
 | `audio`               | `Music`             | `.mp3`, `.wav`, `.flac`, `.aac`, `.m4a`, `.ogg`, etc.                       |
-| `video`               | `Videos`            | `.mp4`, `.mkv`, `.mov`, `.webm`, `.avi`, `.m4v`, etc.                       |
-| `code`                | `Code Files`        | `.py`, `.js`, `.ts`, `.html`, `.css`, `.json`, `.toml`, `.cpp`, `.rs`, etc. |
+| `video`               | `Video`             | `.mp4`, `.mkv`, `.mov`, `.webm`, `.avi`, `.m4v`, etc.                       |
+| `code`                | `Code`              | `.py`, `.js`, `.ts`, `.html`, `.css`, `.json`, `.toml`, `.cpp`, `.rs`, etc. |
 | `programs`            | `Programs`          | `.exe`, `.dmg`, `.pkg`, `.deb`, `.app`, `.msi`, `.apk`, etc.                |
-| `archives`            | `Archives`          | `.zip`, `.tar`, `.gz`, `.7z`, `.rar`, `.bz2`, `.iso`, etc.                  |
+| `archives`            | `Compressed`        | `.zip`, `.tar`, `.gz`, `.7z`, `.rar`, `.bz2`, `.iso`, etc.                  |
 | `ebooks`              | `Ebooks`            | `.epub`, `.mobi`, `.azw`, `.azw3`, `.fb2`, etc.                             |
 | `other_files`         | `Other Files`       | Fallback category for loose files matching no specific rules                |
 | `other_folders`       | `Other Folders`     | Fallback category for unexpected subdirectories                             |

@@ -121,7 +121,7 @@ Downloads Organizer automatically categorizes files into 9 intelligent folders:
 | 🎬       | `Video`                         | `.mp4`, `.mkv`, `.mov`, `.webm`, `.avi`, `.m4v`                       |
 | 💻       | `Code`                          | `.py`, `.js`, `.ts`, `.html`, `.css`, `.json`, `.toml`, `.cpp`, `.rs` |
 | ⚙️       | `Programs`                      | `.exe`, `.dmg`, `.pkg`, `.deb`, `.app`, `.msi`, `.apk`                |
-| 📦       | `Archives`                      | `.zip`, `.tar`, `.gz`, `.7z`, `.rar`, `.bz2`, `.iso`                  |
+| 📦       | `Compressed`                    | `.zip`, `.tar`, `.gz`, `.7z`, `.rar`, `.bz2`, `.iso`                  |
 | 📚       | `Ebooks`                        | `.epub`, `.mobi`, `.azw`, `.azw3`, `.fb2`                             |
 | 📁       | `Other Files` / `Other Folders` | Everything else                                                       |
 

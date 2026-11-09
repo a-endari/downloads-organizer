@@ -10,6 +10,19 @@ from pathlib import Path
 from .constants import DEFAULT_DOWNLOADS_DIR, DEFAULT_IGNORED_FILES
 from .models import Category
 
+_CATEGORY_ALIASES: dict[str, str] = {
+    "documents": "document",
+    "pictures": "picture",
+    "audio": "audio",
+    "video": "video",
+    "code": "code",
+    "programs": "program",
+    "archives": "archive",
+    "ebooks": "ebook",
+    "other_files": "other",
+    "other_folders": "other_folders",
+}
+
 
 def default_config_path() -> Path:
     """Return the OS-appropriate default config file location."""
@@ -85,19 +98,6 @@ def _load_categories(data: dict) -> dict[str, str]:
     categories: dict[str, str] = Category.default_categories()
     categories_data = data.get("categories", {})
 
-    category_aliases = {
-        "documents": "document",
-        "pictures": "picture",
-        "audio": "audio",
-        "video": "video",
-        "code": "code",
-        "programs": "program",
-        "archives": "archive",
-        "ebooks": "ebook",
-        "other_files": "other",
-        "other_folders": "other_folders",
-    }
-
     for key, category_data in categories_data.items():
         if not isinstance(key, str):
             continue
@@ -105,7 +105,7 @@ def _load_categories(data: dict) -> dict[str, str]:
         if folder is None:
             continue
 
-        internal_key = category_aliases.get(key, key)
+        internal_key = _CATEGORY_ALIASES.get(key, key)
         categories[internal_key] = folder
 
     return categories
@@ -120,6 +120,10 @@ def _parse_config_category(value: str, known_categories: dict[str, str]) -> str:
     never declared in [categories] or among the built-ins.
     """
     normalized = value.strip().casefold()
+
+    # Resolve plural category aliases (e.g. "documents" -> "document")
+    # independently of configured folder names.
+    normalized = _CATEGORY_ALIASES.get(normalized, normalized)
 
     if normalized in known_categories:
         return normalized

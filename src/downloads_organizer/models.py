@@ -12,7 +12,7 @@ class Category(StrEnum):
     VIDEO = "Video"
     CODE = "Code"
     PROGRAM = "Programs"
-    ARCHIVE = "Archives"
+    ARCHIVE = "Compressed"
     EBOOK = "Ebooks"
     OTHER = "Other Files"
     OTHER_FOLDERS = "Other Folders"
