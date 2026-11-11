@@ -20,7 +20,7 @@
 
 Here is `downloads-organizer` in action:
 
-![Downloads Organizer demo](demo/demo.gif)
+![Downloads Organizer demo](https://raw.githubusercontent.com/a-endari/downloads-organizer/main/demo/demo.gif)
 
 _This demo terminal recording was created using [VHS](https://github.com/charmbracelet/vhs) by Charm._
 
