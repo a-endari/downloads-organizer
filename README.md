@@ -7,14 +7,25 @@
 [![Python](https://img.shields.io/badge/Python-3.13+-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://python.org)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg?style=for-the-badge)](LICENSE)
 [![Platform](https://img.shields.io/badge/Platform-macOS%20%7C%20Linux%20%7C%20Windows-lightgrey?style=for-the-badge)](#-quick-start)
-[![Privacy](https://img.shields.io/badge/Privacy-100%25%20Offline-success?style=for-the-badge)](#-why-no-ai)
+[![Privacy](https://img.shields.io/badge/Privacy-100%25%20Offline-success?style=for-the-badge)](#-privacy--philosophy)
 [![Stars](https://img.shields.io/github/stars/a-endari/downloads-organizer?style=for-the-badge)](https://github.com/a-endari/downloads-organizer/stargazers)
 [![TestPyPI](https://img.shields.io/badge/TestPyPI-v0.5.2-673AB7?style=for-the-badge&logo=pypi&logoColor=white)](https://test.pypi.org/project/downloads-organizer/)
 [![CI](https://img.shields.io/github/actions/workflow/status/a-endari/downloads-organizer/ci.yml?style=for-the-badge&logo=github-actions&logoColor=white)](https://github.com/a-endari/downloads-organizer/actions)
 
-[**Try it Now**](#-quick-start) • [**See It in Action**](#demo) • [**Contribute**](#-contributing) • [**Report Issues**](https://github.com/a-endari/downloads-organizer/issues)
-
 </div>
+
+---
+
+## Table of Contents
+
+- [Demo](#demo)
+- [Why Download This?](#why-download-this)
+- [What Gets Sorted](#what-gets-sorted)
+- [Installation](#-installation)
+- [Quick Start](#-quick-start)
+- [Configuration](#configuration)
+- [Privacy & Philosophy](#privacy--philosophy)
+- [License](#license)
 
 ---
 
@@ -28,104 +39,37 @@ _This demo terminal recording was created using [VHS](https://github.com/charmbr
 
 ---
 
-## [Read the Full User Manual](docs/user_manual.md)
+## Why Download This?
 
-## 🎯 The Problem
+I built this because my own Downloads folder was a mess — hundreds of PDFs, screenshots, installers, and code files all mixed together. I wanted something that:
 
-Your Downloads folder is a digital junk drawer:
+- **Just works** — one command: `downloads-organizer organize`
+- **Stays out of my way** — runs in milliseconds, no background daemon, no UI
+- **Respects my privacy** — zero network calls, zero telemetry, zero AI
+- **Handles macOS apps correctly** — treats `.app` bundles as single files
+- **Lets me customize** — simple TOML config when I want it, sensible defaults when I don't
 
-- 📄 Hundreds of PDFs, documents, and receipts
-- 🖼️ Screenshots mixed with photos
-- 💻 Code snippets alongside installers
-- 📦 Archives and compressed files everywhere
-
-You tell yourself: _"I'll organize this this weekend"_... and never do.
-
-**Downloads Organizer solves this in one command.**
+No subscriptions, no cloud, no nonsense. Just a clean Downloads folder.
 
 ---
 
-## ✨ Why Download This?
+## What Gets Sorted
 
-| Feature                  | Benefit                                      |
-| ------------------------ | -------------------------------------------- |
-| 🚀 **One Command**       | `downloads-organizer organize` — that's it   |
-| 🔒 **100% Private**      | No cloud, no telemetry, no AI hallucinations |
-| ⚡ **Lightning Fast**    | Runs in milliseconds, not seconds            |
-| 🎯 **Smart Sorting**     | 9 intelligent categories + custom rules      |
-| 🍎 **macOS Native**      | Treats `.app` bundles as single files        |
-| 📋 **Safe by Default**   | `--dry-run` mode previews changes first      |
-| 🛡️ **Zero Dependencies** | Pure Python 3.13 standard library            |
-| 🤖 **No AI Nonsense**    | Deterministic, predictable rules every time  |
+By default, files are organized into these 9 categories (all customizable via config):
 
----
+| Category | Default Folder | Common Extensions |
+| -------- | -------------- | ----------------- |
+| 📄 Documents | `Documents` | `.pdf`, `.doc`, `.docx`, `.xlsx`, `.pptx`, `.txt`, `.md`, `.csv` |
+| 🖼️ Pictures | `Pictures` | `.jpg`, `.png`, `.webp`, `.gif`, `.heic`, `.avif`, `.svg` |
+| 🎵 Audio | `Audio` | `.mp3`, `.wav`, `.flac`, `.aac`, `.m4a`, `.ogg` |
+| 🎬 Video | `Video` | `.mp4`, `.mkv`, `.mov`, `.webm`, `.avi`, `.m4v` |
+| 💻 Code | `Code` | `.py`, `.js`, `.ts`, `.html`, `.css`, `.json`, `.toml`, `.cpp`, `.rs` |
+| ⚙️ Programs | `Programs` | `.exe`, `.dmg`, `.pkg`, `.deb`, `.app`, `.msi`, `.apk` |
+| 📦 Compressed | `Compressed` | `.zip`, `.tar`, `.gz`, `.7z`, `.rar`, `.bz2`, `.iso` |
+| 📚 Ebooks | `Ebooks` | `.epub`, `.mobi`, `.azw`, `.azw3`, `.fb2` |
+| 📁 Other | `Other Files` / `Other Folders` | Everything else |
 
-## 🎯 The Ultimate Goal
-
-> [!IMPORTANT]
-> **Eventually, this tool will opinionatedly clean up your Downloads folder completely automatically in the background—without you ever noticing _(or even having to permit it 😏)_.**  
-> _(Work in progress!)_
-
----
-
-## 📂 How It Works
-
-### Before
-
-```text
-Downloads/
-├── quarterly_report.pdf
-├── vacation_photo.png
-├── installer.dmg
-├── test_script.py
-├── Archive_Files/
-├── Slack.app
-└── random_notes.txt
-```
-
-### One Command Later ⬇️
-
-```bash
-$ downloads-organizer organize
-```
-
-### After
-
-```text
-Downloads/
-├── Documents/
-│   ├── quarterly_report.pdf
-│   └── random_notes.txt
-├── Pictures/
-│   └── vacation_photo.png
-├── Programs/
-│   ├── installer.dmg
-│   └── Slack.app  ✨ Recognized as a macOS app!
-├── Code/
-│   └── test_script.py
-└── Other Folders/
-    └── Archive_Files/
-```
-
-**Your Downloads folder, organized.** No fluff, no confusion.
-
----
-
-## 📊 What Gets Sorted
-
-Downloads Organizer automatically categorizes files into 9 intelligent folders:
-
-| Category | Folder                          | Common Files                                                          |
-| -------- | ------------------------------- | --------------------------------------------------------------------- |
-| 📄       | `Documents`                     | `.pdf`, `.doc`, `.docx`, `.xlsx`, `.pptx`, `.txt`, `.md`, `.csv`      |
-| 🖼️       | `Pictures`                      | `.jpg`, `.png`, `.webp`, `.gif`, `.heic`, `.avif`, `.svg`             |
-| 🎵       | `Audio`                         | `.mp3`, `.wav`, `.flac`, `.aac`, `.m4a`, `.ogg`                       |
-| 🎬       | `Video`                         | `.mp4`, `.mkv`, `.mov`, `.webm`, `.avi`, `.m4v`                       |
-| 💻       | `Code`                          | `.py`, `.js`, `.ts`, `.html`, `.css`, `.json`, `.toml`, `.cpp`, `.rs` |
-| ⚙️       | `Programs`                      | `.exe`, `.dmg`, `.pkg`, `.deb`, `.app`, `.msi`, `.apk`                |
-| 📦       | `Compressed`                    | `.zip`, `.tar`, `.gz`, `.7z`, `.rar`, `.bz2`, `.iso`                  |
-| 📚       | `Ebooks`                        | `.epub`, `.mobi`, `.azw`, `.azw3`, `.fb2`                             |
-| 📁       | `Other Files` / `Other Folders` | Everything else                                                       |
+> 💡 **Customizable:** Change folder names, add categories, or override rules in your config file. See [Configuration](#configuration).
 
 ---
 
@@ -139,16 +83,27 @@ pipx install downloads-organizer --index-url https://test.pypi.org/simple/
 
 > **Why pipx?** Installs in an isolated environment, makes `downloads-organizer` available globally, and avoids polluting your system Python. Best for CLI tools.
 
+#### Installing pipx
+
+| Platform | Command |
+| -------- | ------- |
+| **macOS** | `brew install pipx && pipx ensurepath` |
+| **Linux** | `sudo apt install pipx && pipx ensurepath` (or your distro's equivalent) |
+| **Windows** | `pip install pipx && pipx ensurepath` (requires Python + PATH) |
+
+After installing pipx, restart your shell, then run the pipx install command above.
+
+---
+
 ### Option 2: **pip** (From TestPyPI)
 
 ```bash
-pip install downloads-organizer --index-url https://test.pypi.org/simple/
+pip install downloads-organizer --index-url https://test.pypi.org/simple/ --no-deps
 ```
 
-> ⚠️ TestPyPI installs dependencies from TestPyPI first. If you hit dependency issues, use `--no-deps` (this package has zero runtime dependencies):
-> ```bash
-> pip install downloads-organizer --index-url https://test.pypi.org/simple/ --no-deps
-> ```
+> This package has zero runtime dependencies. `--no-deps` avoids TestPyPI dependency resolution issues.
+
+---
 
 ### Option 3: **From Source** (Development)
 
@@ -157,6 +112,8 @@ git clone https://github.com/a-endari/downloads-organizer.git
 cd downloads-organizer
 pip install -e .
 ```
+
+---
 
 ### Option 4: **pip** (From PyPI — *Coming Soon*)
 
@@ -168,199 +125,65 @@ pip install downloads-organizer
 
 ## 📖 Quick Start
 
-### 1. **See what's in your Downloads**
-
 ```bash
+# 1. See what's in your Downloads
 downloads-organizer
-```
 
-Shows a summary of files ready to be organized.
-
-### 2. **Preview the changes (Dry Run)**
-
-```bash
+# 2. Preview changes (dry run)
 downloads-organizer organize --dry-run
-```
 
-Displays what _would_ move without actually moving anything.
-
-### 3. **Run the organization**
-
-```bash
+# 3. Run the organization
 downloads-organizer organize
-```
 
-Moves files into their categories.
-
-### 4. **Organize specific categories only**
-
-```bash
+# 4. Organize specific categories only
 downloads-organizer organize --only Documents
 downloads-organizer organize --only Code,Programs
-```
 
-### 5. **Get help**
-
-```bash
+# 5. Get help
 downloads-organizer --help
 ```
 
 ---
 
-## ⚙️ Configuration
+## Configuration
 
-Want custom rules? Create a `config.toml` in your config directory:
+Customize folder names, add ignore rules, or create your own categories via a TOML config file.
 
-**Config File Locations:**
-
+**Config file locations:**
 - **macOS/Linux:** `~/.config/downloads-organizer/config.toml`
 - **Windows:** `%APPDATA%\downloads-organizer\config.toml`
 
-**Example `config.toml`:**
-
+**Quick example:**
 ```toml
 [ignore]
-# Files that should never be moved
 files = [".DS_Store", "desktop.ini", ".gitkeep"]
+directories = ["In_Progress", "Keep_Here"]
 
-# Directories that should stay put
-directories = ["In_Progress", "Keep_Here", "Current_Projects"]
+[categories.documents]
+folder = "My Documents"
 ```
 
----
-
-## 🔒 Privacy & Security
-
-- ✅ **No network calls** — Everything happens offline on your machine
-- ✅ **No telemetry** — Your file names never leave your computer
-- ✅ **No cloud services** — No accounts, no logins, no tracking
-- ✅ **Safe by default** — Always preview with `--dry-run` first
-- ✅ **Open source** — Read the code, audit the logic
+📖 **Full documentation:** [Configuration Guide](docs/configuration.md)
 
 ---
 
-## 🤔 Why Not AI?
+## Privacy & Philosophy
 
-I _could_ have built this with a machine learning model or cloud API. Instead, I chose **deterministic rules** because:
+- **100% offline** — No network calls, ever. Your filenames never leave your machine.
+- **No AI** — Deterministic rules. `tax_return_2024.pdf` always goes to Documents. No hallucinations, no surprises.
+- **No telemetry** — No usage tracking, no analytics, no phone-home.
+- **Safe by default** — Always preview with `--dry-run` first.
+- **Open source** — Read the code, audit the logic, fork it.
 
-- ⚡ **Instant** — Runs in milliseconds, not seconds
-- 🔒 **Private** — Your files never leave your computer
-- 🎯 **Predictable** — `tax_return_2024.pdf` always goes to Documents
-- 💰 **Free** — No API costs, no subscriptions, no hidden fees
-- 🔁 **Reliable** — Rules don't hallucinate or change unpredictably
-
----
-
-## 🎯 Core Design Principles
-
-I built this around principles I care about:
-
-- 🎯 **Single-minded** — It cleans `~/Downloads`. It won't touch the rest of your system.
-- ⚡ **Predictable** — A PDF goes to `Documents/` every single time. No surprises.
-- 🔒 **Private & Offline** — Everything stays on your machine. Zero network calls.
-- 🪶 **Zero Dependencies** — Runs entirely on Python's standard library.
-- 🛡️ **Mac Package Safety** — Smart enough to treat macOS `.app`, `.bundle`, and `.framework` directories as single files.
-- 🤫 **Quiet** — It does its job and gets out of your way.
+I built this for myself because every other tool either phoned home, required a subscription, or tried to be "smart" with AI. This does one thing well.
 
 ---
 
-## 🛠️ Under the Hood
+## License
 
-Built with engineering best practices:
+MIT License — use it, fork it, modify it freely.
 
-- **Layered Architecture** — Clean separation between CLI, business logic, and system calls
-- **Type-Safe** — Full type hints for IDE support and static analysis
-- **Standard Library Only** — Zero runtime dependencies (just Python 3.13+)
-- **Tested** — Comprehensive unit and integration tests
-- **Conventional Commits** — Clean, readable Git history
-
----
-
-## 🗺️ Roadmap
-
-- [x] **Core Organization** — Fast file & folder categorization
-- [x] **Safe Preview** — Non-destructive `--dry-run` mode
-- [x] **Filtering** — Organize specific categories with `--only`
-- [x] **Bundle Safety** — macOS `.app` bundle recognition
-- [x] **Config System** — Custom ignore rules via TOML
-- [ ] **Auto-Scheduler** — Background daemon for automatic organization
-- [ ] **Duplicate Finder** — Detect and warn about duplicates
-- [ ] **Interactive Mode** — Step-by-step `--interactive` prompts
-- [ ] **Web Dashboard** — Visual organization stats and history
-
----
-
-## 🔄 Release Process
-
-This project uses **GitHub Actions** for CI/CD:
-
-- **Every push to `main`** — Runs lint (ruff), format check, and tests on Python 3.13 & 3.14
-- **Every version tag (`v*`)** — Builds the package and publishes to **TestPyPI** automatically
-- **Real PyPI** — Will be enabled after TestPyPI validation
-
-To release a new version:
-
-```bash
-# 1. Update version in pyproject.toml
-# 2. Commit and tag
-git add -A
-git commit -m "Release v0.5.3"
-git tag v0.5.3
-git push origin main --tags
-```
-
-The workflow handles the rest: build → test → publish to TestPyPI.
-
----
-
-## 🤝 Contributing
-
-We'd love your help! Whether you're fixing bugs, adding features, or improving docs:
-
-1. **Fork** the repository
-2. **Create a feature branch** (`git checkout -b feature/amazing-feature`)
-3. **Commit** your changes (`git commit -m 'Add amazing feature'`)
-4. **Push** to the branch (`git push origin feature/amazing-feature`)
-5. **Open a Pull Request**
-
-### Development Setup
-
-```bash
-git clone https://github.com/a-endari/downloads-organizer.git
-cd downloads-organizer
-pip install -e ".[dev]"
-pytest  # Run tests
-```
-
-See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed guidelines.
-
----
-
-## 📝 License
-
-Licensed under the **MIT License** — use it, fork it, modify it freely.
-
-See the [LICENSE](LICENSE) file for details.
-
----
-
-## 🎉 Show Your Support
-
-If this tool saves you time or keeps your Downloads folder clean, consider:
-
-- ⭐ **Star this repo** — It helps others discover it
-- 🐛 **Report issues** — Found a bug? [Let us know](https://github.com/a-endari/downloads-organizer/issues)
-- 💬 **Share feedback** — Ideas for improvements? [Start a discussion](https://github.com/a-endari/downloads-organizer/discussions)
-- 📢 **Tell a friend** — Share it with colleagues who need an organized Downloads folder
-
----
-
-## 💡 Pro Tips
-
-- **Run regularly** — Add to your weekly habits or schedule with a cron job
-- **Preview first** — Always use `--dry-run` on first run to verify behavior
-- **Check config** — Review your ignore list to prevent important files from moving
-- **Customize categories** — Modify the config to match your workflow
+See [LICENSE](LICENSE) for details.
 
 ---
 
@@ -368,6 +191,6 @@ If this tool saves you time or keeps your Downloads folder clean, consider:
 
 ### Made with 💙 by [a-endari](https://github.com/a-endari)
 
-[Star on GitHub](https://github.com/a-endari/downloads-organizer) • [Report Issue](https://github.com/a-endari/downloads-organizer/issues) • [Start Discussion](https://github.com/a-endari/downloads-organizer/discussions)
+[⭐ Star on GitHub](https://github.com/a-endari/downloads-organizer) • [🐛 Report Issue](https://github.com/a-endari/downloads-organizer/issues) • [💬 Start Discussion](https://github.com/a-endari/downloads-organizer/discussions)
 
 </div>
