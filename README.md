@@ -9,6 +9,8 @@
 [![Platform](https://img.shields.io/badge/Platform-macOS%20%7C%20Linux%20%7C%20Windows-lightgrey?style=for-the-badge)](#-quick-start)
 [![Privacy](https://img.shields.io/badge/Privacy-100%25%20Offline-success?style=for-the-badge)](#-why-no-ai)
 [![Stars](https://img.shields.io/github/stars/a-endari/downloads-organizer?style=for-the-badge)](https://github.com/a-endari/downloads-organizer/stargazers)
+[![TestPyPI](https://img.shields.io/badge/TestPyPI-v0.5.2-673AB7?style=for-the-badge&logo=pypi&logoColor=white)](https://test.pypi.org/project/downloads-organizer/)
+[![CI](https://img.shields.io/github/actions/workflow/status/a-endari/downloads-organizer/ci.yml?style=for-the-badge&logo=github-actions&logoColor=white)](https://github.com/a-endari/downloads-organizer/actions)
 
 [**Try it Now**](#-quick-start) • [**See It in Action**](#demo) • [**Contribute**](#-contributing) • [**Report Issues**](https://github.com/a-endari/downloads-organizer/issues)
 
@@ -129,7 +131,26 @@ Downloads Organizer automatically categorizes files into 9 intelligent folders:
 
 ## 🚀 Installation
 
-### Option 1: From Source (Recommended for Development)
+### Option 1: **pipx** (Recommended — System-wide, isolated)
+
+```bash
+pipx install downloads-organizer --index-url https://test.pypi.org/simple/
+```
+
+> **Why pipx?** Installs in an isolated environment, makes `downloads-organizer` available globally, and avoids polluting your system Python. Best for CLI tools.
+
+### Option 2: **pip** (From TestPyPI)
+
+```bash
+pip install downloads-organizer --index-url https://test.pypi.org/simple/
+```
+
+> ⚠️ TestPyPI installs dependencies from TestPyPI first. If you hit dependency issues, use `--no-deps` (this package has zero runtime dependencies):
+> ```bash
+> pip install downloads-organizer --index-url https://test.pypi.org/simple/ --no-deps
+> ```
+
+### Option 3: **From Source** (Development)
 
 ```bash
 git clone https://github.com/a-endari/downloads-organizer.git
@@ -137,7 +158,7 @@ cd downloads-organizer
 pip install -e .
 ```
 
-### Option 2: Install from PyPI (Coming Soon)
+### Option 4: **pip** (From PyPI — *Coming Soon*)
 
 ```bash
 pip install downloads-organizer
@@ -266,6 +287,29 @@ Built with engineering best practices:
 - [ ] **Duplicate Finder** — Detect and warn about duplicates
 - [ ] **Interactive Mode** — Step-by-step `--interactive` prompts
 - [ ] **Web Dashboard** — Visual organization stats and history
+
+---
+
+## 🔄 Release Process
+
+This project uses **GitHub Actions** for CI/CD:
+
+- **Every push to `main`** — Runs lint (ruff), format check, and tests on Python 3.13 & 3.14
+- **Every version tag (`v*`)** — Builds the package and publishes to **TestPyPI** automatically
+- **Real PyPI** — Will be enabled after TestPyPI validation
+
+To release a new version:
+
+```bash
+# 1. Update version in pyproject.toml
+# 2. Commit and tag
+git add -A
+git commit -m "Release v0.5.3"
+git tag v0.5.3
+git push origin main --tags
+```
+
+The workflow handles the rest: build → test → publish to TestPyPI.
 
 ---
 
