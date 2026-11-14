@@ -3,6 +3,7 @@ import sys
 from pathlib import Path
 
 from downloads_organizer.config import (
+    Config,
     default_config_path,
     edit_config,
     init_config,
@@ -199,7 +200,115 @@ def handle_config(args: argparse.Namespace) -> None:
         edit_config(config_path)
         return
 
+    if args.path:
+        print(config_path)
+        return
+
+    if args.show:
+        config = load_config(config_path)
+        _print_config(config, config_path)
+        return
+
     print(f"Configuration file:\n  {config_path}")
+
+
+def _print_section(title: str) -> None:
+    """Print a formatted section heading."""
+    print(title)
+    print("-" * len(title))
+
+
+def _format_category_name(key: str, categories: dict[str, str]) -> str:
+    """Return the configured folder name for a category key."""
+    return categories.get(key, key.replace("_", " ").title())
+
+
+def _print_mapping(
+    mapping: dict[str, str],
+    categories: dict[str, str],
+) -> None:
+    """Print classification rules as source-to-destination mappings."""
+    if not mapping:
+        print("  None configured.")
+        return
+
+    width = max(len(source) for source in mapping)
+
+    for source, category in sorted(mapping.items()):
+        folder = _format_category_name(category, categories)
+        print(f"  {source:<{width}}  →  {folder}")
+
+
+def _print_config(config: Config, config_path: Path) -> None:
+    """Print the effective configuration in a human-readable format."""
+    config_path = config_path.expanduser()
+    config_exists = config_path.exists()
+
+    print()
+    title = "Downloads Organizer - Effective Configuration"
+    print(title)
+    print("=" * len(title))
+    print()
+
+    _print_section("Configuration")
+    print(f"  Config file:        {config_path}")
+    print(f"  Config file exists: {'Yes' if config_exists else 'No'}")
+
+    if config_exists:
+        print("  Configuration:     Built-in defaults + user overrides")
+    else:
+        print("  Configuration:     Built-in defaults (no config file found)")
+
+    print()
+
+    _print_section("General Settings")
+    print(f"  Downloads directory: {config.downloads_directory}")
+    print(f"  Filename truncation: {config.truncate_length} characters")
+    print()
+
+    _print_section("Categories")
+
+    for key, folder in sorted(config.categories.items()):
+        label = key.replace("_", " ").title()
+        print(f"  {label:<18} →  {folder}")
+
+    print()
+
+    _print_section("Ignored Files")
+
+    if config.ignored_files:
+        for filename in sorted(config.ignored_files):
+            print(f"  {filename}")
+    else:
+        print("  None configured.")
+
+    print()
+
+    _print_section("Ignored Directories")
+
+    if config.ignored_directories:
+        for directory in sorted(config.ignored_directories):
+            print(f"  {directory}")
+    else:
+        print("  None configured.")
+
+    print()
+
+    _print_section("Classification Rules")
+
+    rule_sections = (
+        ("File Extensions", config.rules.extensions),
+        ("Exact Filenames", config.rules.filenames),
+        ("Glob Patterns", config.rules.patterns),
+        ("Regular Expressions", config.rules.regex),
+    )
+
+    for title, mapping in rule_sections:
+        print()
+        print(f"{title}:")
+        _print_mapping(mapping, config.categories)
+
+    print()
 
 
 def run() -> int:
@@ -237,6 +346,18 @@ def run() -> int:
         "--edit",
         action="store_true",
         help="Open the configuration file in your editor.",
+    )
+
+    config_parser.add_argument(
+        "--path",
+        action="store_true",
+        help="Show the configuration file path.",
+    )
+
+    config_parser.add_argument(
+        "--show",
+        action="store_true",
+        help="Show the effective configuration (merged with defaults).",
     )
 
     stat_parser = subparser.add_parser(
@@ -337,4 +458,5 @@ def run() -> int:
     except (FileNotFoundError, NotADirectoryError) as error:
         print(error)
         return 1
+
     return 0
