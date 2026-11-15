@@ -1,5 +1,6 @@
 import argparse
 import sys
+from importlib.metadata import PackageNotFoundError, version
 from pathlib import Path
 
 from downloads_organizer.config import (
@@ -170,8 +171,11 @@ def handle_organize(
 
 def _insert_default_command(argv: list[str], commands: set[str]) -> list[str]:
     """Allow 'stats' to be omitted: bare dir/no-arg invocations imply 'stats'."""
-    if argv and (argv[0] in commands or argv[0] in ("-h", "--help")):
+    global_options = {"-h", "--help", "--version"}
+
+    if argv and (argv[0] in commands or argv[0] in global_options):
         return argv
+
     return ["stats", *argv]
 
 
@@ -312,6 +316,11 @@ def _print_config(config: Config, config_path: Path) -> None:
 
 
 def run() -> int:
+    try:
+        package_version = version("ae-dlo")
+    except PackageNotFoundError:
+        package_version = "unknown"
+
     config = load_config()
     parser = argparse.ArgumentParser(
         prog="downloads-organizer",
@@ -326,6 +335,13 @@ def run() -> int:
         ),
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
+
+    parser.add_argument(
+        "--version",
+        action="version",
+        version=f"%(prog)s {package_version}",
+    )
+
     subparser = parser.add_subparsers(
         dest="command",
     )
